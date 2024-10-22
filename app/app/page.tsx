@@ -25,7 +25,8 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { Toaster } from "@/components/ui/toaster";
 import { CopyButton } from "@/components/ui/copy-button";
-import PixelAvatar  from "@/components/pixel-avatar";
+import PixelAvatar from "@/components/pixel-avatar";
+import Link from "next/link";
 
 interface FormData {
   network: string;
@@ -198,8 +199,8 @@ export default function Home() {
     <>
       <Toaster />
       <main className="container mx-auto p-8">
-        <h1 className="text-3xl font-bold mb-8">Safe Hash Preview</h1>
-        <Card className="mb-8">
+        <h1 className="text-3xl font-bold mb-4">Safe Hash Preview</h1>
+        <Card className="mb-4">
           <CardHeader>
             <CardTitle>Input Parameters</CardTitle>
           </CardHeader>
@@ -351,7 +352,10 @@ export default function Home() {
                 <div className="space-y-4 w-full">
                   {["domainHash", "messageHash", "safeTransactionHash"].map(
                     (hashType) => (
-                      <div key={hashType} className="flex flex-col space-y-2 w-full">
+                      <div
+                        key={hashType}
+                        className="flex flex-col space-y-2 w-full"
+                      >
                         <Label>
                           {hashType.charAt(0).toUpperCase() + hashType.slice(1)}
                         </Label>

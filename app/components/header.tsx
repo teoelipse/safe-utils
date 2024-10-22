@@ -1,7 +1,7 @@
-import React from 'react';
-import Image from 'next/image';
-import Link from 'next/link';
-import { ModeToggle } from './ModeToggle';
+import React from "react";
+import Image from "next/image";
+import Link from "next/link";
+import { ModeToggle } from "./ModeToggle";
 import { Button } from "@/components/ui/button";
 import { Github } from "lucide-react";
 
@@ -12,7 +12,11 @@ export function Header() {
         <Link href="/" className="flex items-center space-x-2">
           <span className="font-bold text-lg">Safe Hash Preview</span>
         </Link>
+
         <nav className="flex items-center space-x-2">
+          <Button variant="ghost" asChild>
+            <Link href="/how-it-works">How It Works</Link>
+          </Button>
           <Button variant="ghost" size="icon" asChild>
             <a
               href="https://github.com/josepchetrit12/safe-tx-hashes-util"
