@@ -52,7 +52,7 @@ export default function HowItWorks() {
             <li>Select a network from the dropdown menu.</li>
             <li>Enter the Safe address.</li>
             <li>Enter the transaction nonce.</li>
-            <li>Click "Calculate Hashes" to view the results.</li>
+            <li>Click &quot;Calculate Hashes&quot; to view the results.</li>
             <li>
               Compare the displayed hashes with those shown on your hardware
               wallet screen.
