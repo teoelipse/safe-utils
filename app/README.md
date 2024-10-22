@@ -1,36 +1,61 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Safe Hash Preview
+
+This is a Next.js project that allows users to preview Safe transaction hashes.
+
+## Prerequisites
+
+Before you begin, ensure you have the following installed:
+- Node.js (version 14 or later)
+- npm (usually comes with Node.js)
 
 ## Getting Started
 
-First, run the development server:
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/josepchetrit12/safe-tx-hashes-util.git
+   cd safe-tx-hashes-util
+   ```
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+2. Set up the `safe_hashes.sh` script:
+   - Ensure the `safe_hashes.sh` script is located in the parent directory of the app.
+   - Make the script executable:
+     ```bash
+     chmod +x ../safe_hashes.sh
+     ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+3. Install dependencies:
+   ```bash
+   cd app/
+   npm install
+   ```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+4. Run the development server:
+   ```bash
+   npm run dev
+   ```
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+5. Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+
+## Usage
+
+1. Select a network from the dropdown menu.
+2. Enter the Safe address.
+3. Enter the nonce.
+4. Click "Calculate Hashes" to view the results.
 
 ## Learn More
 
-To learn more about Next.js, take a look at the following resources:
+To learn more about the technologies used in this project, check out the following resources:
 
 - [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- [React Documentation](https://reactjs.org/) - learn about React.
+- [Tailwind CSS](https://tailwindcss.com/) - learn about the utility-first CSS framework used in this project.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
 
-## Deploy on Vercel
+## Contributing
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Contributions are welcome! Please feel free to submit a Pull Request.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+## License
+
+This project is open source and available under the [MIT License](LICENSE).
