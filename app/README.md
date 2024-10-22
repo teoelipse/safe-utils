@@ -38,10 +38,20 @@ Before you begin, ensure you have the following installed:
 
 ## Usage
 
-1. Select a network from the dropdown menu.
-2. Enter the Safe address.
-3. Enter the nonce.
-4. Click "Calculate Hashes" to view the results.
+You can use this tool in two ways:
+
+1. Hosted Version:
+   For quick and easy access, you can use the hosted version of Safe Hash Preview at [https://www.safehashpreview.com/](https://www.safehashpreview.com/). This version is ready to use without any setup required.
+
+2. Local Installation:
+   If you prefer to run the tool locally, check the prerequisites and the getting started section above.
+
+
+How to use the application:
+   - Select a network from the dropdown menu.
+   - Enter the Safe address.
+   - Enter the nonce.
+   - Click "Calculate Hashes" to view the results.
 
 ## Learn More
 
