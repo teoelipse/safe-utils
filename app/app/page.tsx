@@ -198,7 +198,7 @@ export default function Home() {
     <>
       <Toaster />
       <main className="container mx-auto p-8">
-        <h1 className="text-3xl font-bold mb-8">Safe Hash Calculator</h1>
+        <h1 className="text-3xl font-bold mb-8">Safe Hash Preview</h1>
         <Card className="mb-8">
           <CardHeader>
             <CardTitle>Input Parameters</CardTitle>

@@ -9,8 +9,8 @@ import { Header } from '@/components/header'
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'Safe Hash Calculator',
-  description: 'Calculate Safe transaction hashes',
+  title: 'Safe Hash Preview',
+  description: 'Preview Safe transaction hashes',
 }
 
 export default function RootLayout({
@@ -23,7 +23,7 @@ export default function RootLayout({
       <body className={inter.className}>
       <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           <TooltipProvider>
-            <div className="flex flex-col min-h-screen">
+            <div className="flex flex-col min-h-screen w-full">
               <Header />
               <main className="flex-grow">
                 {children}
