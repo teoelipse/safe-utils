@@ -145,10 +145,7 @@ calculate_hashes() {
         echo "${prefix,,}${rest^^}"
     }
 
-    # Print the results with the same formatting for "Domain hash" and "Message hash" as a Ledger hardware device.
-    echo "Domain hash: $(format_hash "$domain_hash")"
-    echo "Message hash: $(format_hash "$message_hash")"
-    echo "Safe transaction hash: $safe_tx_hash"
+   echo "{\"domainHash\": \"$(format_hash "$domain_hash")\", \"messageHash\": \"$(format_hash "$message_hash")\", \"safeTransactionHash\": \"$safe_tx_hash\"}"
 }
 
 # Safe Transaction Hashes Calculator
@@ -197,15 +194,9 @@ calculate_safe_tx_hashes() {
     local nonce=$(echo "$response" | jq -r '.results[0].nonce // "0"')
 
     # Calculate and display the hashes.
-    echo "==================================="
-    echo "= Selected Network Configurations ="
-    echo "==================================="
-    echo "Network: $network"
-    echo -e "Chain ID: $chain_id\n"
-    echo "==================="
-    echo "= Computed Hashes ="
-    echo "==================="
-    calculate_hashes "$chain_id" "$address" "$to" "$value" "$data" "$operation" "$safe_tx_gas" "$base_gas" "$gas_price" "$gas_token" "$refund_receiver" "$nonce"
+   local hashes=$(calculate_hashes "$chain_id" "$address" "$to" "$value" "$data" "$operation" "$safe_tx_gas" "$base_gas" "$gas_price" "$gas_token" "$refund_receiver" "$nonce")
+    
+    echo "{\"network\": \"$network\", \"chainId\": $chain_id, \"hashes\": $hashes}"
 }
 
 calculate_safe_tx_hashes "$@"
