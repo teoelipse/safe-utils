@@ -1,4 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { exec } from 'child_process'
+import util from 'util'
+import path from 'path'
+
+const execPromise = util.promisify(exec)
 
 const API_URLS: { [key: string]: string } = {
   arbitrum: "https://safe-transaction-arbitrum.safe.global",
@@ -40,21 +45,22 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    const origin = request.nextUrl.origin.startsWith('https') ? request.nextUrl.origin : `https://${request.nextUrl.host}`;
-    console.log('Fetching from:', `${origin}/api/execute-script?network=${network}&address=${address}&nonce=${nonce}`);
+    const scriptPath = path.join(process.cwd(), '..', 'safe_hashes.sh')
+    const command = `${scriptPath} --network ${network} --address ${address} --nonce ${nonce}`
+    const { stdout, stderr } = await execPromise(command)
 
-    const scriptResponse = await fetch(`${origin}/api/execute-script?network=${network}&address=${address}&nonce=${nonce}`);
-    
-    if (!scriptResponse.ok) {
-      const errorText = await scriptResponse.text()
-      console.error('Script execution failed:', errorText)
-      return NextResponse.json({ error: 'Script execution failed' }, { status: scriptResponse.status })
+    if (stderr) {
+      console.error('Script error:', stderr)
+      return NextResponse.json({ error: 'Error executing script' }, { status: 500 })
     }
 
-    const scriptData = await scriptResponse.json()
-
-
-    return NextResponse.json({ result: scriptData })
+    try {
+      const result = JSON.parse(stdout)
+      return NextResponse.json({ result })
+    } catch (parseError) {
+      console.error('Error parsing script output:', parseError)
+      return NextResponse.json({ error: 'Error parsing script output' }, { status: 500 })
+    }
   } catch (error) {
     console.error('Error:', error)
     return NextResponse.json({ error: 'An error occurred while processing the request' }, { status: 500 })
