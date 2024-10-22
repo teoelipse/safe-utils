@@ -40,7 +40,10 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    const scriptResponse = await fetch(`${request.nextUrl.origin}/api/execute-script?network=${network}&address=${address}&nonce=${nonce}`)
+    const origin = request.nextUrl.origin.startsWith('https') ? request.nextUrl.origin : `https://${request.nextUrl.host}`;
+    console.log('Fetching from:', `${origin}/api/execute-script?network=${network}&address=${address}&nonce=${nonce}`);
+
+    const scriptResponse = await fetch(`${origin}/api/execute-script?network=${network}&address=${address}&nonce=${nonce}`);
     
     if (!scriptResponse.ok) {
       const errorText = await scriptResponse.text()
