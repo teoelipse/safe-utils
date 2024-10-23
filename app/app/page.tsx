@@ -350,30 +350,30 @@ export default function Home() {
                 </>
               ) : result ? (
                 <div className="space-y-4 w-full">
-                  {["safeTransactionHash", "domainHash", "messageHash"].map(
-                    (hashType) => (
-                      <div
-                        key={hashType}
-                        className="flex flex-col space-y-2 w-full"
-                      >
-                        <Label>
-                          {hashType.charAt(0).toUpperCase() + hashType.slice(1)}
-                        </Label>
-                        <div className="flex items-center space-x-2 w-full">
-                          <Input readOnly value={result.hashes[hashType]} />
-                          <CopyButton
-                            value={result.hashes[hashType]}
-                            onCopy={() => {
-                              toast({
-                                title: "Copied to clipboard",
-                                description: `${hashType} has been copied to your clipboard.`,
-                              });
-                            }}
-                          />
-                        </div>
+                  {[
+                    { key: "safeTransactionHash", label: "safeTxHash" },
+                    { key: "domainHash", label: "Domain hash" },
+                    { key: "messageHash", label: "Message hash" }
+                  ].map(({ key, label }) => (
+                    <div
+                      key={key}
+                      className="flex flex-col space-y-2 w-full"
+                    >
+                      <Label>{label}</Label>
+                      <div className="flex items-center space-x-2 w-full">
+                        <Input readOnly value={result.hashes[key]} />
+                        <CopyButton
+                          value={result.hashes[key]}
+                          onCopy={() => {
+                            toast({
+                              title: "Copied to clipboard",
+                              description: `${label} has been copied to your clipboard.`,
+                            });
+                          }}
+                        />
                       </div>
-                    )
-                  )}
+                    </div>
+                  ))}
                 </div>
               ) : (
                 <p>No result available</p>
