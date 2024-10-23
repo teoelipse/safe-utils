@@ -350,7 +350,7 @@ export default function Home() {
                 </>
               ) : result ? (
                 <div className="space-y-4 w-full">
-                  {["domainHash", "messageHash", "safeTransactionHash"].map(
+                  {["safeTransactionHash", "domainHash", "messageHash"].map(
                     (hashType) => (
                       <div
                         key={hashType}
