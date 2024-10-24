@@ -79,7 +79,7 @@ declare -A CHAIN_IDS=(
 
 # Utility function to display the usage information.
 usage() {
-    echo "Usage: $0 [--help] [--list-networks] --network <network> --address <address> --nonce <nonce>"
+    echo "Usage: $0 [--help] [--list-networks] --network <network> --address <address> --nonce <nonce> [--output <format>]"
     echo
     echo "Options:"
     echo "  --help              Display this help message"
@@ -87,9 +87,10 @@ usage() {
     echo "  --network <network> Specify the network (required)"
     echo "  --address <address> Specify the Safe multisig address (required)"
     echo "  --nonce <nonce>     Specify the transaction nonce (required)"
+    echo "  --output <format>   Specify the output format: 'json' or 'terminal' (default: terminal)"
     echo
     echo "Example:"
-    echo "  $0 --network ethereum --address 0x1234...5678 --nonce 42"
+    echo "  $0 --network ethereum --address 0x1234...5678 --nonce 42 --output json"
     exit 1
 }
 
@@ -203,8 +204,6 @@ calculate_hashes() {
     local domain_hash=$(chisel eval "keccak256(abi.encode($DOMAIN_SEPARATOR_TYPEHASH, $chain_id, $address))" | awk '/Data:/ {gsub(/\x1b\[[0-9;]*m/, "", $3); print $3}')
 
     # Calculate the data hash.
-    # The dynamic value `bytes` is encoded as a `keccak256` hash of its content.
-    # See: https://eips.ethereum.org/EIPS/eip-712#definition-of-encodedata.
     local data_hashed=$(cast keccak "$data")
     # Encode the message.
     local message=$(cast abi-encode "SafeTxStruct(bytes32,address,uint256,bytes32,uint8,uint256,uint256,uint256,address,address,uint256)" "$SAFE_TX_TYPEHASH" "$to" "$value" "$data_hashed" "$operation" "$safe_tx_gas" "$base_gas" "$gas_price" "$gas_token" "$refund_receiver" "$nonce")
@@ -214,12 +213,36 @@ calculate_hashes() {
     # Calculate the Safe transaction hash.
     local safe_tx_hash=$(chisel eval "keccak256(abi.encodePacked(bytes1(0x19), bytes1(0x01), bytes32($domain_hash), bytes32($message_hash)))" | awk '/Data:/ {gsub(/\x1b\[[0-9;]*m/, "", $3); print $3}')
 
-    # Print the retrieved transaction data.
-    print_transaction_data "$address" "$to" "$data" "$message"
-    # Print the ABI-decoded transaction data.
-    print_decoded_data "$data_decoded"
-    # Print the results with the same formatting for "Domain hash" and "Message hash" as a Ledger hardware device.
-    print_hash_info "$domain_hash" "$message_hash" "$safe_tx_hash"
+    # Parse the data_decoded JSON
+    local method=$(echo "$data_decoded" | jq -r '.method')
+    local parameters=$(echo "$data_decoded" | jq -r '.parameters')
+
+    # Return JSON object
+    jq -n \
+        --arg address "$address" \
+        --arg to "$to" \
+        --arg data "$data" \
+        --arg message "$message" \
+        --arg method "$method" \
+        --argjson parameters "$parameters" \
+        --arg domainHash "$(format_hash "$domain_hash")" \
+        --arg messageHash "$(format_hash "$message_hash")" \
+        --arg safeTxHash "$safe_tx_hash" \
+        '{
+            transactionData: {
+                multisigAddress: $address,
+                to: $to,
+                data: $data,
+                encodedMessage: $message,
+                method: $method,
+                parameters: $parameters
+            },
+            hashes: {
+                domainHash: $domainHash,
+                messageHash: $messageHash,
+                safeTransactionHash: $safeTxHash
+            }
+        }'
 }
 
 # Utility function to retrieve the API URL of the selected network.
@@ -242,7 +265,7 @@ get_chain_id() {
 # 6. Extracts the relevant transaction details from the API response.
 # 7. Calls the `calculate_hashes` function to compute and display the results.
 calculate_safe_tx_hashes() {
-    local network="" address="" nonce=""
+    local network="" address="" nonce="" output_format="terminal"
 
     # Parse the command line arguments.
     while [[ $# -gt 0 ]]; do
@@ -251,6 +274,7 @@ calculate_safe_tx_hashes() {
             --network) network="$2"; shift 2 ;;
             --address) address="$2"; shift 2 ;;
             --nonce) nonce="$2"; shift 2 ;;
+            --output) output_format="$2"; shift 2 ;;
             --list-networks) list_networks ;;
             *) echo "Unknown option: $1" >&2; usage ;;
         esac
@@ -269,45 +293,25 @@ calculate_safe_tx_hashes() {
     local count=$(echo "$response" | jq '.count')
     local idx=0
 
-    # Inform the user that no transactions are available for the specified nonce.
+    # Handle no transactions or multiple transactions
     if [[ $count -eq 0 ]]; then
-        echo "$(tput setaf 3)No transaction is available for this nonce!$(tput setaf 0)"
+        if [[ "$output_format" == "json" ]]; then
+            echo '{"error": "No transaction is available for this nonce!"}'
+        else
+            echo "No transaction is available for this nonce!"
+        fi
         exit 0
-    # Notify the user about multiple transactions with identical nonce values and prompt for user input.
     elif [[ $count -gt 1 ]]; then
-        cat << EOF
-$(tput setaf 3)Several transactions with identical nonce values have been detected.
-This occurrence is normal if you are deliberately replacing an existing transaction.
-However, if your Safe interface displays only a single transaction, this could indicate
-potential irregular activity requiring your attention.$(tput sgr0)
-
-Kindly specify the transaction's array value.
-You can find the array values at the following endpoint:
-$(tput setaf 2)$endpoint$(tput sgr0)
-
-Please enter the index of the array (starting with 0):
-EOF
-
-        while true; do
-            read -r idx
-
-            # Validate if user input is a number.
-            if ! [[ $idx =~ ^[0-9]+$ ]]; then
-                echo "$(tput setaf 1)Error: Please enter a valid number!$(tput sgr0)"
-                continue
-            fi
-
-            array_value=$(echo "$response" | jq ".results[$idx]")
-
-            if [[ $array_value == null ]]; then
-                echo "$(tput setaf 1)Error: No transaction found at index $idx. Please try again.$(tput sgr0)"
-                continue
-            fi
-
-            break
-        done
+        if [[ "$output_format" == "json" ]]; then
+            echo '{"warning": "Several transactions with identical nonce values have been detected. Please check the API endpoint for details.", "endpoint": "'"$endpoint"'"}'
+        else
+            echo "Warning: Several transactions with identical nonce values have been detected."
+            echo "Please check the API endpoint for details: $endpoint"
+        fi
+        exit 0
     fi
 
+    # Extract transaction data
     local to=$(echo "$response" | jq -r ".results[$idx].to // \"0x0000000000000000000000000000000000000000\"")
     local value=$(echo "$response" | jq -r ".results[$idx].value // \"0\"")
     local data=$(echo "$response" | jq -r ".results[$idx].data // \"0x\"")
@@ -320,16 +324,38 @@ EOF
     local nonce=$(echo "$response" | jq -r ".results[$idx].nonce // \"0\"")
     local data_decoded=$(echo "$response" | jq -r ".results[$idx].dataDecoded // \"0x\"")
 
-    # Calculate and display the hashes.
-    echo "==================================="
-    echo "= Selected Network Configurations ="
-    echo -e "===================================\n"
-    print_field "Network" "$network"
-    print_field "Chain ID" "$chain_id" true
-    echo "========================================"
-    echo "= Transaction Data and Computed Hashes ="
-    echo "========================================"
-    calculate_hashes "$chain_id" "$address" "$to" "$value" "$data" "$operation" "$safe_tx_gas" "$base_gas" "$gas_price" "$gas_token" "$refund_receiver" "$nonce" "$data_decoded"
+    # Calculate hashes
+    local result=$(calculate_hashes "$chain_id" "$address" "$to" "$value" "$data" "$operation" "$safe_tx_gas" "$base_gas" "$gas_price" "$gas_token" "$refund_receiver" "$nonce" "$data_decoded")
+
+    if [[ "$output_format" == "json" ]]; then
+        # Output JSON directly
+        echo "$result"
+    else
+        # Format and print terminal-friendly output
+        echo "==================================="
+        echo "= Selected Network Configurations ="
+        echo "==================================="
+        echo
+        echo "Network: $network"
+        echo "Chain ID: $chain_id"
+        echo
+        echo "========================================"
+        echo "= Transaction Data and Computed Hashes ="
+        echo "========================================"
+        echo
+        echo "Transaction Data"
+        echo "Multisig address: $address"
+        echo "To: $to"
+        echo "Data: $data"
+        echo "Encoded message: $(echo "$result" | jq -r '.transactionData.encodedMessage')"
+        echo "Method: $(echo "$result" | jq -r '.transactionData.method')"
+        echo "Parameters: $(echo "$result" | jq -r '.transactionData.parameters | @json')"
+        echo
+        echo "Hashes"
+        echo "Domain hash: $(echo "$result" | jq -r '.hashes.domainHash')"
+        echo "Message hash: $(echo "$result" | jq -r '.hashes.messageHash')"
+        echo "Safe transaction hash: $(echo "$result" | jq -r '.hashes.safeTransactionHash')"
+    fi
 }
 
 calculate_safe_tx_hashes "$@"
