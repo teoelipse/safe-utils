@@ -213,9 +213,13 @@ calculate_hashes() {
     # Calculate the Safe transaction hash.
     local safe_tx_hash=$(chisel eval "keccak256(abi.encodePacked(bytes1(0x19), bytes1(0x01), bytes32($domain_hash), bytes32($message_hash)))" | awk '/Data:/ {gsub(/\x1b\[[0-9;]*m/, "", $3); print $3}')
 
-    # Parse the data_decoded JSON
-    local method=$(echo "$data_decoded" | jq -r '.method')
-    local parameters=$(echo "$data_decoded" | jq -r '.parameters')
+    # Parse the data_decoded JSON, handle potential errors
+    local method="0x (ETH Transfer)"
+    local parameters="[]"
+    if [ "$data_decoded" != "0x" ] && [ "$data_decoded" != "null" ]; then
+        method=$(echo "$data_decoded" | jq -r '.method // "0x (ETH Transfer)"')
+        parameters=$(echo "$data_decoded" | jq -r '.parameters // [] | @json' 2>/dev/null || echo "[]")
+    fi
 
     # Return JSON object
     jq -n \
