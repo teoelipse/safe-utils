@@ -154,6 +154,7 @@ export default function Home() {
     hashes?: { [key: string]: string };
     transactionData?: { [key: string]: any };
     error?: string;
+    endpoint?: string;
   } | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [mounted, setMounted] = useState(false);
@@ -352,7 +353,22 @@ export default function Home() {
                 </>
               ) : result ? (
                 result.error ? (
-                  <div className="text-red-500 font-semibold">{result.error}</div>
+                  <div className="space-y-2">
+                    <div className="text-red-500 font-semibold">{result.error}</div>
+                    {result.endpoint && (
+                      <div>
+                        <span className="font-semibold">API Endpoint: </span>
+                        <a 
+                          href={result.endpoint} 
+                          target="_blank" 
+                          rel="noopener noreferrer" 
+                          className="text-blue-500 hover:underline break-all"
+                        >
+                          {result.endpoint}
+                        </a>
+                      </div>
+                    )}
+                  </div>
                 ) : (
                   <div className="space-y-8 w-full">
                     <div className="space-y-4">

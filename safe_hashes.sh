@@ -303,7 +303,7 @@ calculate_safe_tx_hashes() {
         exit 0
     elif [[ $count -gt 1 ]]; then
         if [[ "$output_format" == "json" ]]; then
-            echo '{"warning": "Several transactions with identical nonce values have been detected. Please check the API endpoint for details.", "endpoint": "'"$endpoint"'"}'
+            echo '{"error": "Several transactions with identical nonce values have been detected. Please check the API endpoint for details.", "endpoint": "'"$endpoint"'"}'
         else
             echo "Warning: Several transactions with identical nonce values have been detected."
             echo "Please check the API endpoint for details: $endpoint"
