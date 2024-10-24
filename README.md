@@ -61,16 +61,40 @@ The script will output the domain, message, and Safe transaction hashes, allowin
 ===================================
 = Selected Network Configurations =
 ===================================
+
 Network: arbitrum
 Chain ID: 42161
 
-===================
-= Computed Hashes =
-===================
+========================================
+= Transaction Data and Computed Hashes =
+========================================
+
+> Transaction Data:
+Multisig address: 0x111CEEee040739fD91D29C34C33E6B3E112F2177
+To: 0x111CEEee040739fD91D29C34C33E6B3E112F2177
+Data: 0x0d582f130000000000000000000000000c75fa5a5f1c0997e3eea425cfa13184ed0ec9e50000000000000000000000000000000000000000000000000000000000000003
+Encoded message: 0xbb8310d486368db6bd6f849402fdd73ad53d316b5a4b2644ad6efe0f941286d8000000000000000000000000111ceeee040739fd91d29c34c33e6b3e112f21770000000000000000000000000000000000000000000000000000000000000000b34f85cea7c4d9f384d502fc86474cd71ff27a674d785ebd23a4387871b8cbfe00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000ea
+Method: addOwnerWithThreshold
+Parameters: [
+  {
+    "name": "owner",
+    "type": "address",
+    "value": "0x0c75Fa5a5F1C0997e3eEA425cFA13184ed0eC9e5"
+  },
+  {
+    "name": "_threshold",
+    "type": "uint256",
+    "value": "3"
+  }
+]
+
+> Hashes:
 Domain hash: 0x1CF7F9B1EFE3BC47FE02FD27C649FEA19E79D66040683A1C86C7490C80BF7291
 Message hash: 0xD9109EA63C50ECD3B80B6B27ED5C5A9FD3D546C2169DFB69BFA7BA24CD14C7A5
 Safe transaction hash: 0x0cb7250b8becd7069223c54e2839feaed4cee156363fbfe5dd0a48e75c4e25b3
 ```
+
+> To see an example of a standard ETH transfer, run the command: `./safe_hashes.sh --network ethereum --address 0x8FA3b4570B4C96f8036C13b64971BA65867eEB48 --nonce 39` and review the output.
 
 To list all supported networks:
 
@@ -85,3 +109,12 @@ To list all supported networks:
 3. You trust [Foundry](https://github.com/foundry-rs/foundry).
 4. You trust the [Safe transaction service API](https://docs.safe.global/core-api/transaction-service-overview).
 5. You trust [Ledger's secure screen](https://www.ledger.com/academy/topics/ledgersolutions/ledger-wallets-secure-screen-security-model).
+
+## Community-Maintained User Interface Implementations
+
+> [!IMPORTANT]
+> Please be aware that user interface implementations may introduce additional trust assumptions, such as relying on `npm` dependencies that have not undergone thorough review. Always verify and cross-reference with the main script.
+
+- [`safehashpreview.com`](https://www.safehashpreview.com):
+  - Code: [`josepchetrit12/safe-tx-hashes-util`](https://github.com/josepchetrit12/safe-tx-hashes-util)
+  - Authors: [`josepchetrit12`](https://github.com/josepchetrit12), [`xaler5`](https://github.com/xaler5)

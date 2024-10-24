@@ -13,6 +13,11 @@
 # -o pipefail: Return the exit status of the first failed command in a pipeline.
 set -euo pipefail
 
+# Set the terminal formatting constants.
+readonly GREEN="\e[32m"
+readonly UNDERLINE="\e[4m"
+readonly RESET="\e[0m"
+
 # Set the type hash constants.
 # => `keccak256("EIP712Domain(uint256 chainId,address verifyingContract)");`
 # See: https://github.com/safe-global/safe-smart-account/blob/a0a1d4292006e26c4dbd52282f4c932e1ffca40f/contracts/Safe.sol#L54-L57.
@@ -72,15 +77,6 @@ declare -A CHAIN_IDS=(
     [zksync]=324
 )
 
-# Utility function to list all supported networks.
-list_networks() {
-    echo "Supported Networks:"
-    for network in "${!CHAIN_IDS[@]}"; do
-        echo "  $network (${CHAIN_IDS[$network]})"
-    done
-    exit 0
-}
-
 # Utility function to display the usage information.
 usage() {
     echo "Usage: $0 [--help] [--list-networks] --network <network> --address <address> --nonce <nonce>"
@@ -97,14 +93,94 @@ usage() {
     exit 1
 }
 
-# Utility function to retrieve the API URL of the selected network.
-get_api_url() {
-    echo "${API_URLS[$1]:-Invalid network}" || exit 1
+# Utility function to list all supported networks.
+list_networks() {
+    echo "Supported Networks:"
+    for network in "${!CHAIN_IDS[@]}"; do
+        echo "  $network (${CHAIN_IDS[$network]})"
+    done
+    exit 0
 }
 
-# Utility function to retrieve the chain ID of the selected network.
-get_chain_id() {
-    echo "${CHAIN_IDS[$1]:-Invalid network}" || exit 1
+# Utility function to print a section header.
+print_header() {
+    local header=$1
+    if [ -t 1 ] && tput sgr0 >/dev/null 2>&1; then
+        # Terminal supports formatting.
+        printf "\n${UNDERLINE}%s${RESET}\n" "$header"
+    else
+        # Fallback for terminals without formatting support.
+        printf "\n%s\n" "> $header:"
+    fi
+}
+
+# Utility function to print a labelled value.
+print_field() {
+    local label=$1
+    local value=$2
+    local empty_line=${3:-false}
+    if [ -t 1 ] && tput sgr0 >/dev/null 2>&1; then
+        # Terminal supports formatting.
+        printf "%s: ${GREEN}%s${RESET}\n" "$label" "$value"
+    else
+        # Fallback for terminals without formatting support.
+        printf "%s: %s\n" "$label" "$value"
+    fi
+
+    # Print an empty line if requested.
+    if [ "$empty_line" == "true" ]; then
+        echo
+    fi
+}
+
+# Utility function to print the transaction data.
+print_transaction_data() {
+    local address=$1
+    local to=$2
+    local data=$3
+    local message=$4
+
+    print_header "Transaction Data"
+    print_field "Multisig address" "$address"
+    print_field "To" "$to"
+    print_field "Data" "$data"
+    print_field "Encoded message" "$message"
+}
+
+# Utility function to format the hash (keep `0x` lowercase, rest uppercase).
+format_hash() {
+    local hash=$1
+    local prefix="${hash:0:2}"
+    local rest="${hash:2}"
+    echo "${prefix,,}${rest^^}"
+}
+
+# Utility function to print the hash information.
+print_hash_info() {
+    local domain_hash=$1
+    local message_hash=$2
+    local safe_tx_hash=$3
+
+    print_header "Hashes"
+    print_field "Domain hash" "$(format_hash "$domain_hash")"
+    print_field "Message hash" "$(format_hash "$message_hash")"
+    print_field "Safe transaction hash" "$safe_tx_hash"
+}
+
+# Utility function to print the ABI-decoded transaction data.
+print_decoded_data() {
+    local data_decoded=$1
+
+    if [[ "$data_decoded" == "0x" ]]; then
+        print_field "Method" "0x (ETH Transfer)"
+        print_field "Parameters" "[]"
+    else
+        method=$(echo "$data_decoded" | jq -r ".method")
+        parameters=$(echo "$data_decoded" | jq -r ".parameters")
+
+        print_field "Method" "$method"
+        print_field "Parameters" "$parameters"
+    fi
 }
 
 # Utility function to calculate the domain and message hashes.
@@ -121,6 +197,7 @@ calculate_hashes() {
     local gas_token=${10}
     local refund_receiver=${11}
     local nonce=${12}
+    local data_decoded=${13}
 
     # Calculate the domain hash.
     local domain_hash=$(chisel eval "keccak256(abi.encode($DOMAIN_SEPARATOR_TYPEHASH, $chain_id, $address))" | awk '/Data:/ {gsub(/\x1b\[[0-9;]*m/, "", $3); print $3}')
@@ -137,15 +214,22 @@ calculate_hashes() {
     # Calculate the Safe transaction hash.
     local safe_tx_hash=$(chisel eval "keccak256(abi.encodePacked(bytes1(0x19), bytes1(0x01), bytes32($domain_hash), bytes32($message_hash)))" | awk '/Data:/ {gsub(/\x1b\[[0-9;]*m/, "", $3); print $3}')
 
-    # Function to format the hash (keep `0x` lowercase, rest uppercase).
-    format_hash() {
-        local hash=$1
-        local prefix="${hash:0:2}"
-        local rest="${hash:2}"
-        echo "${prefix,,}${rest^^}"
-    }
+    # Print the retrieved transaction data.
+    print_transaction_data "$address" "$to" "$data" "$message"
+    # Print the ABI-decoded transaction data.
+    print_decoded_data "$data_decoded"
+    # Print the results with the same formatting for "Domain hash" and "Message hash" as a Ledger hardware device.
+    print_hash_info "$domain_hash" "$message_hash" "$safe_tx_hash"
+}
 
-   echo "{\"domainHash\": \"$(format_hash "$domain_hash")\", \"messageHash\": \"$(format_hash "$message_hash")\", \"safeTransactionHash\": \"$safe_tx_hash\"}"
+# Utility function to retrieve the API URL of the selected network.
+get_api_url() {
+    echo "${API_URLS[$1]:-Invalid network}" || exit 1
+}
+
+# Utility function to retrieve the chain ID of the selected network.
+get_chain_id() {
+    echo "${CHAIN_IDS[$1]:-Invalid network}" || exit 1
 }
 
 # Safe Transaction Hashes Calculator
@@ -182,21 +266,70 @@ calculate_safe_tx_hashes() {
 
     # Fetch the transaction data from the API.
     local response=$(curl -s "$endpoint")
-    local to=$(echo "$response" | jq -r '.results[0].to // "0x0000000000000000000000000000000000000000"')
-    local value=$(echo "$response" | jq -r '.results[0].value // "0"')
-    local data=$(echo "$response" | jq -r '.results[0].data // "0x"')
-    local operation=$(echo "$response" | jq -r '.results[0].operation // "0"')
-    local safe_tx_gas=$(echo "$response" | jq -r '.results[0].safeTxGas // "0"')
-    local base_gas=$(echo "$response" | jq -r '.results[0].baseGas // "0"')
-    local gas_price=$(echo "$response" | jq -r '.results[0].gasPrice // "0"')
-    local gas_token=$(echo "$response" | jq -r '.results[0].gasToken // "0x0000000000000000000000000000000000000000"')
-    local refund_receiver=$(echo "$response" | jq -r '.results[0].refundReceiver // "0x0000000000000000000000000000000000000000"')
-    local nonce=$(echo "$response" | jq -r '.results[0].nonce // "0"')
+    local count=$(echo "$response" | jq '.count')
+    local idx=0
+
+    # Inform the user that no transactions are available for the specified nonce.
+    if [[ $count -eq 0 ]]; then
+        echo "$(tput setaf 3)No transaction is available for this nonce!$(tput setaf 0)"
+        exit 0
+    # Notify the user about multiple transactions with identical nonce values and prompt for user input.
+    elif [[ $count -gt 1 ]]; then
+        cat << EOF
+$(tput setaf 3)Several transactions with identical nonce values have been detected.
+This occurrence is normal if you are deliberately replacing an existing transaction.
+However, if your Safe interface displays only a single transaction, this could indicate
+potential irregular activity requiring your attention.$(tput sgr0)
+
+Kindly specify the transaction's array value.
+You can find the array values at the following endpoint:
+$(tput setaf 2)$endpoint$(tput sgr0)
+
+Please enter the index of the array (starting with 0):
+EOF
+
+        while true; do
+            read -r idx
+
+            # Validate if user input is a number.
+            if ! [[ $idx =~ ^[0-9]+$ ]]; then
+                echo "$(tput setaf 1)Error: Please enter a valid number!$(tput sgr0)"
+                continue
+            fi
+
+            array_value=$(echo "$response" | jq ".results[$idx]")
+
+            if [[ $array_value == null ]]; then
+                echo "$(tput setaf 1)Error: No transaction found at index $idx. Please try again.$(tput sgr0)"
+                continue
+            fi
+
+            break
+        done
+    fi
+
+    local to=$(echo "$response" | jq -r ".results[$idx].to // \"0x0000000000000000000000000000000000000000\"")
+    local value=$(echo "$response" | jq -r ".results[$idx].value // \"0\"")
+    local data=$(echo "$response" | jq -r ".results[$idx].data // \"0x\"")
+    local operation=$(echo "$response" | jq -r ".results[$idx].operation // \"0\"")
+    local safe_tx_gas=$(echo "$response" | jq -r ".results[$idx].safeTxGas // \"0\"")
+    local base_gas=$(echo "$response" | jq -r ".results[$idx].baseGas // \"0\"")
+    local gas_price=$(echo "$response" | jq -r ".results[$idx].gasPrice // \"0\"")
+    local gas_token=$(echo "$response" | jq -r ".results[$idx].gasToken // \"0x0000000000000000000000000000000000000000\"")
+    local refund_receiver=$(echo "$response" | jq -r ".results[$idx].refundReceiver // \"0x0000000000000000000000000000000000000000\"")
+    local nonce=$(echo "$response" | jq -r ".results[$idx].nonce // \"0\"")
+    local data_decoded=$(echo "$response" | jq -r ".results[$idx].dataDecoded // \"0x\"")
 
     # Calculate and display the hashes.
-   local hashes=$(calculate_hashes "$chain_id" "$address" "$to" "$value" "$data" "$operation" "$safe_tx_gas" "$base_gas" "$gas_price" "$gas_token" "$refund_receiver" "$nonce")
-    
-    echo "{\"network\": \"$network\", \"chainId\": $chain_id, \"hashes\": $hashes}"
+    echo "==================================="
+    echo "= Selected Network Configurations ="
+    echo -e "===================================\n"
+    print_field "Network" "$network"
+    print_field "Chain ID" "$chain_id" true
+    echo "========================================"
+    echo "= Transaction Data and Computed Hashes ="
+    echo "========================================"
+    calculate_hashes "$chain_id" "$address" "$to" "$value" "$data" "$operation" "$safe_tx_gas" "$base_gas" "$gas_price" "$gas_token" "$refund_receiver" "$nonce" "$data_decoded"
 }
 
 calculate_safe_tx_hashes "$@"
