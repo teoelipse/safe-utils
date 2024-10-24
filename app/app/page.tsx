@@ -151,7 +151,9 @@ const NETWORKS = [
 
 export default function Home() {
   const [result, setResult] = useState<{
-    hashes: { [key: string]: string };
+    hashes?: { [key: string]: string };
+    transactionData?: { [key: string]: any };
+    error?: string;
   } | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [mounted, setMounted] = useState(false);
@@ -349,32 +351,69 @@ export default function Home() {
                   <Skeleton className="h-4 w-2/3" />
                 </>
               ) : result ? (
-                <div className="space-y-4 w-full">
-                  {[
-                    { key: "safeTransactionHash", label: "safeTxHash" },
-                    { key: "domainHash", label: "Domain hash" },
-                    { key: "messageHash", label: "Message hash" }
-                  ].map(({ key, label }) => (
-                    <div
-                      key={key}
-                      className="flex flex-col space-y-2 w-full"
-                    >
-                      <Label>{label}</Label>
-                      <div className="flex items-center space-x-2 w-full">
-                        <Input readOnly value={result.hashes[key]} />
-                        <CopyButton
-                          value={result.hashes[key]}
-                          onCopy={() => {
-                            toast({
-                              title: "Copied to clipboard",
-                              description: `${label} has been copied to your clipboard.`,
-                            });
-                          }}
-                        />
+                result.error ? (
+                  <div className="text-red-500 font-semibold">{result.error}</div>
+                ) : (
+                  <div className="space-y-8 w-full">
+                    <div className="space-y-4">
+                      <h3 className="text-lg font-semibold">Transaction Data</h3>
+                      {[
+                        { key: "multisigAddress", label: "Multisig address" },
+                        { key: "to", label: "To" },
+                        { key: "data", label: "Data" },
+                        { key: "encodedMessage", label: "Encoded message" },
+                        { key: "method", label: "Method" },
+                      ].map(({ key, label }) => (
+                        <div key={key} className="flex flex-col space-y-2 w-full">
+                          <Label>{label}</Label>
+                          <div className="flex items-center space-x-2 w-full">
+                            <Input readOnly value={result.transactionData?.[key]} />
+                            <CopyButton
+                              value={result.transactionData?.[key]}
+                              onCopy={() => {
+                                toast({
+                                  title: "Copied to clipboard",
+                                  description: `${label} has been copied to your clipboard.`,
+                                });
+                              }}
+                            />
+                          </div>
+                        </div>
+                      ))}
+                      <div className="flex flex-col space-y-2 w-full">
+                        <Label>Parameters</Label>
+                        <pre className="bg-gray-100 p-2 rounded-md overflow-x-auto">
+                          {JSON.stringify(result.transactionData?.parameters, null, 2)}
+                        </pre>
                       </div>
                     </div>
-                  ))}
-                </div>
+                    
+                    <div className="space-y-4">
+                      <h3 className="text-lg font-semibold">Hashes</h3>
+                      {[
+                        { key: "safeTransactionHash", label: "safeTxHash" },
+                        { key: "domainHash", label: "Domain hash" },
+                        { key: "messageHash", label: "Message hash" }
+                      ].map(({ key, label }) => (
+                        <div key={key} className="flex flex-col space-y-2 w-full">
+                          <Label>{label}</Label>
+                          <div className="flex items-center space-x-2 w-full">
+                            <Input readOnly value={result.hashes?.[key]} />
+                            <CopyButton
+                              value={result.hashes?.[key]}
+                              onCopy={() => {
+                                toast({
+                                  title: "Copied to clipboard",
+                                  description: `${label} has been copied to your clipboard.`,
+                                });
+                              }}
+                            />
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )
               ) : (
                 <p>No result available</p>
               )}
