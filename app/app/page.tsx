@@ -400,7 +400,7 @@ export default function Home() {
                           <div className="flex items-center space-x-2 w-full">
                             <Input readOnly value={result.hashes?.[key]} />
                             <CopyButton
-                              value={result.hashes?.[key]}
+                              value={result.hashes?.[key] || ""}
                               onCopy={() => {
                                 toast({
                                   title: "Copied to clipboard",
