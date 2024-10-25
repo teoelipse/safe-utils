@@ -398,7 +398,7 @@ export default function Home() {
                       ))}
                       <div className="flex flex-col space-y-2 w-full">
                         <Label>Parameters</Label>
-                        <pre className="bg-gray-100 p-2 rounded-md overflow-x-auto">
+                        <pre className="bg-gray-100 p-2 rounded-md overflow-x-auto dark:bg-zinc-900">
                           {JSON.stringify(result.transactionData?.parameters, null, 2)}
                         </pre>
                       </div>
