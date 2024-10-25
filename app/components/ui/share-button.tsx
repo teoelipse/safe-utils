@@ -4,7 +4,11 @@ import { useToast } from "@/hooks/use-toast";
 import { Button, ButtonProps } from "@/components/ui/button";
 import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
 
-export function ShareButton({ className, url,  ...props }: ButtonProps) {
+interface ShareButtonProps extends ButtonProps {
+  url: string;
+}
+
+export function ShareButton({ className, url,  ...props }: ShareButtonProps) {
   const { toast } = useToast();
 
   const handleShare = async () => {

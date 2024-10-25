@@ -221,7 +221,7 @@ export default function Home() {
   const form = useForm<FormData>({
     defaultValues: {
       network: network,
-      chainId: chainId,
+      chainId: Number(chainId),
       address: address,
       nonce: nonce,
     },
@@ -231,7 +231,7 @@ export default function Home() {
     setMounted(true);
     if (safeAddress && nonce) {
       form.setValue("network", network);
-      form.setValue("chainId", chainId);
+      form.setValue("chainId", Number(chainId));
       form.setValue("address", address)
       form.setValue("nonce", nonce);
     }
@@ -257,8 +257,8 @@ export default function Home() {
     }
   };
 
-  const getShareUrl = (network, address, nonce) => {
-    const baseLink = "https://www.safehashpreview.com/";
+  const getShareUrl = (network: string, address: string, nonce: string) => {
+    const baseLink = process.env.NEXT_PUBLIC_BASE_URL;
     const networkPrefix = NETWORKS.find(
       (n) => n.value === network
     )?.gnosisPrefix;
