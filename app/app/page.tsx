@@ -25,8 +25,9 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { Toaster } from "@/components/ui/toaster";
 import { CopyButton } from "@/components/ui/copy-button";
+import { ShareButton } from "@/components/ui/share-button";
 import PixelAvatar from "@/components/pixel-avatar";
-import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 
 interface FormData {
   network: string;
@@ -40,116 +41,154 @@ const NETWORKS = [
     value: "arbitrum",
     label: "Arbitrum",
     chainId: 42161,
+    gnosisPrefix: "arb1",
     logo: "networks/arbitrum.ico",
   },
   {
     value: "aurora",
     label: "Aurora",
     chainId: 1313161554,
+    gnosisPrefix: "aurora",
     logo: "networks/aurora.ico",
   },
   {
     value: "avalanche",
     label: "Avalanche",
     chainId: 43114,
+    gnosisPrefix: "avax",
     logo: "networks/avalanche.ico",
   },
-  { value: "base", label: "Base", chainId: 8453, logo: "networks/base.ico" },
+  {
+    value: "base",
+    label: "Base",
+    chainId: 8453,
+    gnosisPrefix: "base",
+    logo: "networks/base.ico",
+  },
   {
     value: "base-sepolia",
     label: "Base Sepolia",
     chainId: 84532,
+    gnosisPrefix: "basesep",
     logo: "networks/base.ico",
   },
   {
     value: "blast",
     label: "Blast",
     chainId: 81457,
+    gnosisPrefix: "blast",
     logo: "networks/blast.ico",
   },
-  { value: "bsc", label: "BSC", chainId: 56, logo: "networks/bsc.ico" },
-  { value: "celo", label: "Celo", chainId: 42220, logo: "networks/celo.ico" },
+  {
+    value: "bsc",
+    label: "BSC",
+    chainId: 56,
+    gnosisPrefix: "bnb",
+    logo: "networks/bsc.ico",
+  },
+  {
+    value: "celo",
+    label: "Celo",
+    chainId: 42220,
+    gnosisPrefix: "celo",
+    logo: "networks/celo.ico",
+  },
   {
     value: "ethereum",
     label: "Ethereum",
     chainId: 1,
+    gnosisPrefix: "eth",
     logo: "networks/ethereum.ico",
   },
   {
     value: "gnosis",
     label: "Gnosis Chain",
     chainId: 100,
+    gnosisPrefix: "gno",
     logo: "networks/gnosis.ico",
   },
   {
     value: "gnosis-chiado",
     label: "Gnosis Chiado",
     chainId: 10200,
+    gnosisPrefix: "chiado",
     logo: "networks/gnosis.ico",
   },
   {
     value: "linea",
     label: "Linea",
     chainId: 59144,
+    gnosisPrefix: "linea",
     logo: "networks/linea.ico",
   },
   {
     value: "mantle",
     label: "Mantle",
     chainId: 5000,
+    gnosisPrefix: "mnt",
     logo: "networks/mantle.ico",
   },
   {
     value: "optimism",
     label: "Optimism",
     chainId: 10,
+    gnosisPrefix: "oeth",
     logo: "networks/optimism.ico",
   },
   {
     value: "polygon",
     label: "Polygon",
     chainId: 137,
+    gnosisPrefix: "matic",
     logo: "networks/polygon.ico",
   },
   {
     value: "polygon-zkevm",
     label: "Polygon zkEVM",
     chainId: 1101,
+    gnosisPrefix: "zkevm",
     logo: "networks/polygon.ico",
   },
   {
     value: "scroll",
     label: "Scroll",
     chainId: 534352,
+    gnosisPrefix: "scr",
     logo: "networks/scroll.ico",
   },
   {
     value: "sepolia",
     label: "Sepolia",
     chainId: 11155111,
+    gnosisPrefix: "sep",
     logo: "networks/ethereum.ico",
   },
   {
     value: "worldchain",
     label: "Worldchain",
     chainId: 10252,
+    gnosisPrefix: "wc",
     logo: "networks/worldchain.ico",
   },
   {
     value: "xlayer",
     label: "xLayer",
     chainId: 204,
+    gnosisPrefix: "xlayer",
     logo: "networks/xlayer.ico",
   },
   {
     value: "zksync",
     label: "zkSync",
     chainId: 324,
+    gnosisPrefix: "zksync",
     logo: "networks/zksync.ico",
   },
 ];
 
 export default function Home() {
+  const searchParams = useSearchParams();
+
   const [result, setResult] = useState<{
     hashes?: { [key: string]: string };
     transactionData?: { [key: string]: any };
@@ -158,21 +197,45 @@ export default function Home() {
   } | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [mounted, setMounted] = useState(false);
-
   const { toast } = useToast();
+
+  const [safeAddress] = useState(searchParams.get("safeAddress") || "");
+  const [network] = useState(() => {
+    const prefix = safeAddress.split(":")[0];
+    return NETWORKS.find((n) => n.gnosisPrefix === prefix)?.value || "";
+  });
+  const [chainId] = useState(() => {
+    const prefix = safeAddress.split(":")[0];
+    return NETWORKS.find((n) => n.gnosisPrefix === prefix)?.chainId || "";
+  });
+  const [address] = useState(() => {
+    const _address = safeAddress.match(/0x[a-fA-F0-9]{40}/)?.[0];
+    if (_address) {
+      return _address;
+    } else {
+      return "";
+    }
+  });
+  const [nonce] = useState(searchParams.get("nonce") || "");
 
   const form = useForm<FormData>({
     defaultValues: {
-      network: "",
-      chainId: 0,
-      address: "",
-      nonce: "",
+      network: network,
+      chainId: chainId,
+      address: address,
+      nonce: nonce,
     },
   });
 
   useEffect(() => {
     setMounted(true);
-  }, []);
+    if (safeAddress && nonce) {
+      form.setValue("network", network);
+      form.setValue("chainId", chainId);
+      form.setValue("address", address)
+      form.setValue("nonce", nonce);
+    }
+  }, [safeAddress, nonce]);
 
   const onSubmit = async (data: FormData) => {
     setIsLoading(true);
@@ -192,6 +255,18 @@ export default function Home() {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const getShareUrl = (network, address, nonce) => {
+    const baseLink = "https://www.safehashpreview.com/";
+    const networkPrefix = NETWORKS.find(
+      (n) => n.value === network
+    )?.gnosisPrefix;
+    const safeAddress = `${networkPrefix}:${encodeURIComponent(address)}`;
+    const url = `${baseLink}?safeAddress=${safeAddress}&nonce=${encodeURIComponent(
+      nonce
+    )}`;
+    return url;
   };
 
   if (!mounted) {
@@ -315,6 +390,33 @@ export default function Home() {
                           placeholder="Enter Safe address"
                           leftIcon={<PixelAvatar address={field.value} />}
                           {...field}
+                          onChange={(e) => {
+                            const address =
+                              e.target.value.match(/0x[a-fA-F0-9]{40}/)?.[0];
+                            if (address) {
+                              field.onChange(address);
+                            }
+
+                            const [sepPrefix, rest] = e.target.value.split(":");
+                            if (
+                              rest &&
+                              NETWORKS.some(
+                                (network) => network.gnosisPrefix === sepPrefix
+                              )
+                            ) {
+                              const networkWithPrefix = NETWORKS.find(
+                                (network) => network.gnosisPrefix === sepPrefix
+                              );
+                              form.setValue(
+                                "network",
+                                networkWithPrefix!.value
+                              );
+                              form.setValue(
+                                "chainId",
+                                networkWithPrefix!.chainId
+                              );
+                            }
+                          }}
                         />
                       </FormControl>
                     </FormItem>
@@ -340,10 +442,19 @@ export default function Home() {
           </CardContent>
         </Card>
         {(isLoading || result) && (
-          <Card className="mb-8">
+          <Card className="mb-8 relative">
             <CardHeader>
               <CardTitle>Result</CardTitle>
             </CardHeader>
+            <div className="absolute top-3 right-3">
+              <ShareButton
+                url={getShareUrl(
+                  form.getValues("network"),
+                  form.getValues("address"),
+                  form.getValues("nonce")
+                )}
+              />
+            </div>
             <CardContent>
               {isLoading ? (
                 <>
@@ -354,14 +465,16 @@ export default function Home() {
               ) : result ? (
                 result.error ? (
                   <div className="space-y-2">
-                    <div className="text-red-500 font-semibold">{result.error}</div>
+                    <div className="text-red-500 font-semibold">
+                      {result.error}
+                    </div>
                     {result.endpoint && (
                       <div>
                         <span className="font-semibold">API Endpoint: </span>
-                        <a 
-                          href={result.endpoint} 
-                          target="_blank" 
-                          rel="noopener noreferrer" 
+                        <a
+                          href={result.endpoint}
+                          target="_blank"
+                          rel="noopener noreferrer"
                           className="text-blue-500 hover:underline break-all"
                         >
                           {result.endpoint}
@@ -372,7 +485,9 @@ export default function Home() {
                 ) : (
                   <div className="space-y-8 w-full">
                     <div className="space-y-4">
-                      <h3 className="text-lg font-semibold">Transaction Data</h3>
+                      <h3 className="text-lg font-semibold">
+                        Transaction Data
+                      </h3>
                       {[
                         { key: "multisigAddress", label: "Multisig address" },
                         { key: "to", label: "To" },
@@ -380,10 +495,16 @@ export default function Home() {
                         { key: "encodedMessage", label: "Encoded message" },
                         { key: "method", label: "Method" },
                       ].map(({ key, label }) => (
-                        <div key={key} className="flex flex-col space-y-2 w-full">
+                        <div
+                          key={key}
+                          className="flex flex-col space-y-2 w-full"
+                        >
                           <Label>{label}</Label>
                           <div className="flex items-center space-x-2 w-full">
-                            <Input readOnly value={result.transactionData?.[key]} />
+                            <Input
+                              readOnly
+                              value={result.transactionData?.[key]}
+                            />
                             <CopyButton
                               value={result.transactionData?.[key]}
                               onCopy={() => {
@@ -398,20 +519,27 @@ export default function Home() {
                       ))}
                       <div className="flex flex-col space-y-2 w-full">
                         <Label>Parameters</Label>
-                        <pre className="bg-gray-100 p-2 rounded-md overflow-x-auto dark:bg-zinc-900">
-                          {JSON.stringify(result.transactionData?.parameters, null, 2)}
+                        <pre className="bg-gray-100 p-2 rounded-md overflow-x-auto  dark:bg-zinc-900">
+                          {JSON.stringify(
+                            result.transactionData?.parameters,
+                            null,
+                            2
+                          )}
                         </pre>
                       </div>
                     </div>
-                    
+
                     <div className="space-y-4">
                       <h3 className="text-lg font-semibold">Hashes</h3>
                       {[
                         { key: "safeTransactionHash", label: "safeTxHash" },
                         { key: "domainHash", label: "Domain hash" },
-                        { key: "messageHash", label: "Message hash" }
+                        { key: "messageHash", label: "Message hash" },
                       ].map(({ key, label }) => (
-                        <div key={key} className="flex flex-col space-y-2 w-full">
+                        <div
+                          key={key}
+                          className="flex flex-col space-y-2 w-full"
+                        >
                           <Label>{label}</Label>
                           <div className="flex items-center space-x-2 w-full">
                             <Input readOnly value={result.hashes?.[key]} />
