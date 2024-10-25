@@ -351,6 +351,20 @@ export default function Home() {
                           placeholder="Enter Safe address"
                           leftIcon={<PixelAvatar address={field.value} />}
                           {...field}
+                          onChange={(e) => {
+                            const address =
+                              e.target.value.match(/0x[a-fA-F0-9]{40}/)?.[0];
+                            if (address) {
+                              field.onChange(address);
+                            }
+                            
+                          const [sepPrefix, rest] = e.target.value.split(':');
+                          if (rest && NETWORKS.some(network => network.gnosisPrefix === sepPrefix)) {
+                            const networkWithPrefix = NETWORKS.find(network => network.gnosisPrefix === sepPrefix);
+                            form.setValue("network", networkWithPrefix!.value);
+                            form.setValue("chainId", networkWithPrefix!.chainId);
+                          }
+                          }}
                         />
                       </FormControl>
                     </FormItem>
