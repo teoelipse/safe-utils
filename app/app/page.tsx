@@ -25,6 +25,7 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { Toaster } from "@/components/ui/toaster";
 import { CopyButton } from "@/components/ui/copy-button";
+import { ShareButton } from "@/components/ui/share-button";
 import PixelAvatar from "@/components/pixel-avatar";
 import Link from "next/link";
 
@@ -230,6 +231,14 @@ export default function Home() {
     }
   };
 
+  const getShareUrl = (network, address, nonce) => {
+    const baseLink = "https://www.safehashpreview.com/";
+    const networkPrefix = NETWORKS.find(n => n.value === network)?.gnosisPrefix;
+    const safeAddress = `${networkPrefix}:${encodeURIComponent(address)}`;
+    const url = `${baseLink}?safeAddress=${safeAddress}&nonce=${encodeURIComponent(nonce)}`;
+    return url
+  };
+
   if (!mounted) {
     return null; // or a loading spinner
   }
@@ -390,10 +399,19 @@ export default function Home() {
           </CardContent>
         </Card>
         {(isLoading || result) && (
-          <Card className="mb-8">
+          <Card className="mb-8 relative">
             <CardHeader>
               <CardTitle>Result</CardTitle>
             </CardHeader>
+            <div className="absolute top-3 right-3">
+              <ShareButton
+                url={getShareUrl(
+                  form.getValues("network"),
+                  form.getValues("address"),
+                  form.getValues("nonce")
+                )}
+              />
+            </div>
             <CardContent>
               {isLoading ? (
                 <>
