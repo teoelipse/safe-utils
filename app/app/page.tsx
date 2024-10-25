@@ -27,7 +27,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { CopyButton } from "@/components/ui/copy-button";
 import { ShareButton } from "@/components/ui/share-button";
 import PixelAvatar from "@/components/pixel-avatar";
-import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 
 interface FormData {
   network: string;
@@ -187,6 +187,8 @@ const NETWORKS = [
 ];
 
 export default function Home() {
+  const searchParams = useSearchParams();
+
   const [result, setResult] = useState<{
     hashes?: { [key: string]: string };
     transactionData?: { [key: string]: any };
@@ -195,21 +197,45 @@ export default function Home() {
   } | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [mounted, setMounted] = useState(false);
-
   const { toast } = useToast();
+
+  const [safeAddress] = useState(searchParams.get("safeAddress") || "");
+  const [network] = useState(() => {
+    const prefix = safeAddress.split(":")[0];
+    return NETWORKS.find((n) => n.gnosisPrefix === prefix)?.value || "";
+  });
+  const [chainId] = useState(() => {
+    const prefix = safeAddress.split(":")[0];
+    return NETWORKS.find((n) => n.gnosisPrefix === prefix)?.chainId || "";
+  });
+  const [address] = useState(() => {
+    const _address = safeAddress.match(/0x[a-fA-F0-9]{40}/)?.[0];
+    if (_address) {
+      return _address;
+    } else {
+      return "";
+    }
+  });
+  const [nonce] = useState(searchParams.get("nonce") || "");
 
   const form = useForm<FormData>({
     defaultValues: {
-      network: "",
-      chainId: 0,
-      address: "",
-      nonce: "",
+      network: network,
+      chainId: chainId,
+      address: address,
+      nonce: nonce,
     },
   });
 
   useEffect(() => {
     setMounted(true);
-  }, []);
+    if (safeAddress && nonce) {
+      form.setValue("network", network);
+      form.setValue("chainId", chainId);
+      form.setValue("address", address)
+      form.setValue("nonce", nonce);
+    }
+  }, [safeAddress, nonce]);
 
   const onSubmit = async (data: FormData) => {
     setIsLoading(true);
@@ -478,6 +504,7 @@ export default function Home() {
                         { key: "safeTransactionHash", label: "safeTxHash" },
                         { key: "domainHash", label: "Domain hash" },
                         { key: "messageHash", label: "Message hash" }
+                        { key: "messageHash", label: "Message hash" },
                       ].map(({ key, label }) => (
                         <div key={key} className="flex flex-col space-y-2 w-full">
                           <Label>{label}</Label>
