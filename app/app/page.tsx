@@ -259,10 +259,14 @@ export default function Home() {
 
   const getShareUrl = (network, address, nonce) => {
     const baseLink = "https://www.safehashpreview.com/";
-    const networkPrefix = NETWORKS.find(n => n.value === network)?.gnosisPrefix;
+    const networkPrefix = NETWORKS.find(
+      (n) => n.value === network
+    )?.gnosisPrefix;
     const safeAddress = `${networkPrefix}:${encodeURIComponent(address)}`;
-    const url = `${baseLink}?safeAddress=${safeAddress}&nonce=${encodeURIComponent(nonce)}`;
-    return url
+    const url = `${baseLink}?safeAddress=${safeAddress}&nonce=${encodeURIComponent(
+      nonce
+    )}`;
+    return url;
   };
 
   if (!mounted) {
@@ -392,13 +396,26 @@ export default function Home() {
                             if (address) {
                               field.onChange(address);
                             }
-                            
-                          const [sepPrefix, rest] = e.target.value.split(':');
-                          if (rest && NETWORKS.some(network => network.gnosisPrefix === sepPrefix)) {
-                            const networkWithPrefix = NETWORKS.find(network => network.gnosisPrefix === sepPrefix);
-                            form.setValue("network", networkWithPrefix!.value);
-                            form.setValue("chainId", networkWithPrefix!.chainId);
-                          }
+
+                            const [sepPrefix, rest] = e.target.value.split(":");
+                            if (
+                              rest &&
+                              NETWORKS.some(
+                                (network) => network.gnosisPrefix === sepPrefix
+                              )
+                            ) {
+                              const networkWithPrefix = NETWORKS.find(
+                                (network) => network.gnosisPrefix === sepPrefix
+                              );
+                              form.setValue(
+                                "network",
+                                networkWithPrefix!.value
+                              );
+                              form.setValue(
+                                "chainId",
+                                networkWithPrefix!.chainId
+                              );
+                            }
                           }}
                         />
                       </FormControl>
@@ -448,14 +465,16 @@ export default function Home() {
               ) : result ? (
                 result.error ? (
                   <div className="space-y-2">
-                    <div className="text-red-500 font-semibold">{result.error}</div>
+                    <div className="text-red-500 font-semibold">
+                      {result.error}
+                    </div>
                     {result.endpoint && (
                       <div>
                         <span className="font-semibold">API Endpoint: </span>
-                        <a 
-                          href={result.endpoint} 
-                          target="_blank" 
-                          rel="noopener noreferrer" 
+                        <a
+                          href={result.endpoint}
+                          target="_blank"
+                          rel="noopener noreferrer"
                           className="text-blue-500 hover:underline break-all"
                         >
                           {result.endpoint}
@@ -466,7 +485,9 @@ export default function Home() {
                 ) : (
                   <div className="space-y-8 w-full">
                     <div className="space-y-4">
-                      <h3 className="text-lg font-semibold">Transaction Data</h3>
+                      <h3 className="text-lg font-semibold">
+                        Transaction Data
+                      </h3>
                       {[
                         { key: "multisigAddress", label: "Multisig address" },
                         { key: "to", label: "To" },
@@ -474,10 +495,16 @@ export default function Home() {
                         { key: "encodedMessage", label: "Encoded message" },
                         { key: "method", label: "Method" },
                       ].map(({ key, label }) => (
-                        <div key={key} className="flex flex-col space-y-2 w-full">
+                        <div
+                          key={key}
+                          className="flex flex-col space-y-2 w-full"
+                        >
                           <Label>{label}</Label>
                           <div className="flex items-center space-x-2 w-full">
-                            <Input readOnly value={result.transactionData?.[key]} />
+                            <Input
+                              readOnly
+                              value={result.transactionData?.[key]}
+                            />
                             <CopyButton
                               value={result.transactionData?.[key]}
                               onCopy={() => {
@@ -492,21 +519,27 @@ export default function Home() {
                       ))}
                       <div className="flex flex-col space-y-2 w-full">
                         <Label>Parameters</Label>
-                        <pre className="bg-gray-100 p-2 rounded-md overflow-x-auto dark:bg-zinc-900">
-                          {JSON.stringify(result.transactionData?.parameters, null, 2)}
+                        <pre className="bg-gray-100 p-2 rounded-md overflow-x-auto  dark:bg-zinc-900">
+                          {JSON.stringify(
+                            result.transactionData?.parameters,
+                            null,
+                            2
+                          )}
                         </pre>
                       </div>
                     </div>
-                    
+
                     <div className="space-y-4">
                       <h3 className="text-lg font-semibold">Hashes</h3>
                       {[
                         { key: "safeTransactionHash", label: "safeTxHash" },
                         { key: "domainHash", label: "Domain hash" },
-                        { key: "messageHash", label: "Message hash" }
                         { key: "messageHash", label: "Message hash" },
                       ].map(({ key, label }) => (
-                        <div key={key} className="flex flex-col space-y-2 w-full">
+                        <div
+                          key={key}
+                          className="flex flex-col space-y-2 w-full"
+                        >
                           <Label>{label}</Label>
                           <div className="flex items-center space-x-2 w-full">
                             <Input readOnly value={result.hashes?.[key]} />
