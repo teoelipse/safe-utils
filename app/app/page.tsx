@@ -36,6 +36,29 @@ interface FormData {
   nonce: string;
 }
 
+interface ApiResponse {
+  network: {
+    name: string;
+    chain_id: string;
+  };
+  transaction: {
+    multisig_address: string;
+    to: string;
+    value: string;
+    data: string;
+    encoded_message: string;
+    data_decoded: {
+      method: string;
+      parameters: any[];
+    };
+  };
+  hashes: {
+    domain_hash: string;
+    message_hash: string;
+    safe_transaction_hash: string;
+  };
+}
+
 const NETWORKS = [
   {
     value: "arbitrum",
@@ -190,8 +213,9 @@ export default function Home() {
   const searchParams = useSearchParams();
 
   const [result, setResult] = useState<{
-    hashes?: { [key: string]: string };
-    transactionData?: { [key: string]: any };
+    network?: ApiResponse["network"];
+    transaction?: ApiResponse["transaction"];
+    hashes?: ApiResponse["hashes"];
     error?: string;
     endpoint?: string;
   } | null>(null);
@@ -241,7 +265,7 @@ export default function Home() {
     setIsLoading(true);
     setResult(null);
     try {
-      const response = await axios.get(
+      const response = await axios.get<{ result: ApiResponse }>(
         `/api/calculate-hashes?network=${data.network}&address=${data.address}&nonce=${data.nonce}`
       );
       setResult(response.data.result);
@@ -489,39 +513,50 @@ export default function Home() {
                         Transaction Data
                       </h3>
                       {[
-                        { key: "multisigAddress", label: "Multisig address" },
+                        { key: "multisig_address", label: "Multisig address" },
                         { key: "to", label: "To" },
                         { key: "data", label: "Data" },
-                        { key: "encodedMessage", label: "Encoded message" },
-                        { key: "method", label: "Method" },
-                      ].map(({ key, label }) => (
-                        <div
-                          key={key}
-                          className="flex flex-col space-y-2 w-full"
-                        >
-                          <Label>{label}</Label>
-                          <div className="flex items-center space-x-2 w-full">
-                            <Input
-                              readOnly
-                              value={result.transactionData?.[key]}
-                            />
-                            <CopyButton
-                              value={result.transactionData?.[key]}
-                              onCopy={() => {
-                                toast({
-                                  title: "Copied to clipboard",
-                                  description: `${label} has been copied to your clipboard.`,
-                                });
-                              }}
-                            />
+                        { key: "encoded_message", label: "Encoded message" },
+                      ].map(({ key, label }) => {
+                        const value = result.transaction?.[key as keyof typeof result.transaction];
+                        const stringValue = typeof value === 'string' ? value : '';
+                        
+                        return (
+                          <div
+                            key={key}
+                            className="flex flex-col space-y-2 w-full"
+                          >
+                            <Label>{label}</Label>
+                            <div className="flex items-center space-x-2 w-full">
+                              <Input
+                                readOnly
+                                value={stringValue}
+                              />
+                              <CopyButton
+                                value={stringValue}
+                                onCopy={() => {
+                                  toast({
+                                    title: "Copied to clipboard",
+                                    description: `${label} has been copied to your clipboard.`,
+                                  });
+                                }}
+                              />
+                            </div>
                           </div>
-                        </div>
-                      ))}
+                        );
+                      })}
+                      <div className="flex flex-col space-y-2 w-full">
+                        <Label>Method</Label>
+                        <Input
+                          readOnly
+                          value={result.transaction?.data_decoded?.method || ""}
+                        />
+                      </div>
                       <div className="flex flex-col space-y-2 w-full">
                         <Label>Parameters</Label>
-                        <pre className="bg-gray-100 p-2 rounded-md overflow-x-auto  dark:bg-zinc-900">
+                        <pre className="bg-gray-100 p-2 rounded-md overflow-x-auto dark:bg-zinc-900">
                           {JSON.stringify(
-                            result.transactionData?.parameters,
+                            result.transaction?.data_decoded?.parameters,
                             null,
                             2
                           )}
@@ -532,9 +567,9 @@ export default function Home() {
                     <div className="space-y-4">
                       <h3 className="text-lg font-semibold">Hashes</h3>
                       {[
-                        { key: "safeTransactionHash", label: "safeTxHash" },
-                        { key: "domainHash", label: "Domain hash" },
-                        { key: "messageHash", label: "Message hash" },
+                        { key: "safe_transaction_hash", label: "safeTxHash" },
+                        { key: "domain_hash", label: "Domain hash" },
+                        { key: "message_hash", label: "Message hash" },
                       ].map(({ key, label }) => (
                         <div
                           key={key}
@@ -542,9 +577,9 @@ export default function Home() {
                         >
                           <Label>{label}</Label>
                           <div className="flex items-center space-x-2 w-full">
-                            <Input readOnly value={result.hashes?.[key]} />
+                            <Input readOnly value={result.hashes?.[key as keyof typeof result.hashes]} />
                             <CopyButton
-                              value={result.hashes?.[key] || ""}
+                              value={result.hashes?.[key as keyof typeof result.hashes] || ""}
                               onCopy={() => {
                                 toast({
                                   title: "Copied to clipboard",

@@ -46,7 +46,7 @@ export async function GET(request: NextRequest) {
 
   try {
     const scriptPath = path.join(process.cwd(), '..', 'safe_hashes.sh')
-    const command = `${scriptPath} --network ${network} --address ${address} --nonce ${nonce} --output json`
+    const command = `${scriptPath} --network ${network} --address ${address} --nonce ${nonce} --json`
     const { stdout, stderr } = await execPromise(command)
 
     if (stderr) {
