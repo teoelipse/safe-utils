@@ -8,45 +8,6 @@
 
 This repository contains both a Bash script and a web interface for calculating Safe transaction hashes. It helps users verify transaction hashes before signing them on hardware wallets by retrieving transaction details from the Safe transaction service API and computing the domain and message hashes using the EIP-712 standard.
 
-<<<<<<< HEAD
-## Web Interface
-
-A user-friendly web interface is available at [safehashpreview.com](https://www.safehashpreview.com) that makes it easy to:
-- Select from supported networks via dropdown
-- Enter Safe address and nonce
-- View calculated hashes and transaction details
-- Copy values with one click
-- Compare hashes with hardware wallet screen
-
-### Local Development
-
-To run the web interface locally:
-
-1. Clone the repository:
-```bash
-git clone git@github.com:josepchetrit12/safe-preview-app.git
-cd safe-preview-app
-```
-
-2. Install dependencies:
-```bash
-cd app/
-npm install
-```
-
-3. Run the development server:
-```bash
-npm run dev
-```
-
-4. Open [http://localhost:3000](http://localhost:3000) in your browser
-
-## Command Line Script
-
-The original Bash script is still available for command-line usage. See below for supported networks and usage instructions.
-
-### Supported Networks
-=======
 > [!NOTE]
 > This Bash [script](./safe_hashes.sh) relies on the [Safe transaction service API](https://docs.safe.global/core-api/transaction-service-overview), which requires transactions to be proposed and _logged_ in the service before they can be retrieved. Consequently, the initial transaction proposer cannot access the transaction at the proposal stage, making this approach incompatible with 1-of-1 multisigs.[^1]
 
@@ -63,7 +24,6 @@ The original Bash script is still available for command-line usage. See below fo
 - [Community-Maintained User Interface Implementations](#community-maintained-user-interface-implementations)
 
 ## Supported Networks
->>>>>>> upstream/main
 
 - Arbitrum (identifier: `arbitrum`, chain ID: `42161`)
 - Aurora (identifier: `aurora`, chain ID: `1313161554`)
@@ -103,9 +63,6 @@ The original Bash script is still available for command-line usage. See below fo
 - `--address <address>`: Specify Safe multisig address
 - `--nonce <nonce>`: Specify transaction nonce
 
-<<<<<<< HEAD
-Make script executable before use:
-=======
 - `--help`: Display this help message.
 - `--list-networks`: List all supported networks and their chain IDs.
 - `--network <network>`: Specify the network (e.g., `ethereum`, `polygon`).
@@ -115,29 +72,10 @@ Make script executable before use:
 
 Before you invoke the [script](./safe_hashes.sh), make it executable:
 
->>>>>>> upstream/main
 ```console
 chmod +x safe_hashes.sh
 ```
 
-<<<<<<< HEAD
-## Trust Assumptions
-
-1. You trust the script and web interface code 😃
-2. You trust Linux
-3. You trust Foundry
-4. You trust the Safe transaction service API
-5. You trust Ledger's secure screen
-
-## Authors
-
-- Web Interface: [josepchetrit12](https://github.com/josepchetrit12) and [xaler5](https://github.com/xaler5) from OpenZeppelin
-- Original Script: [pcaversaccio](https://github.com/pcaversaccio)
-
-## License
-
-AGPL-3.0 license
-=======
 > [!TIP]
 > The [script](./safe_hashes.sh) is already set as _executable_ in the repository, so you can run it immediately after cloning or pulling the repository without needing to change permissions.
 
@@ -340,4 +278,3 @@ Safe message hash: 0x1866b559f56261ada63528391b93a1fe8e2e33baf7cace94fc6b42202d1
   - Authors: [`josepchetrit12`](https://github.com/josepchetrit12), [`xaler5`](https://github.com/xaler5)
 
 [^1]: It is theoretically possible to query transactions prior to the first signature; however, this functionality is not incorporated into the main [script](https://github.com/pcaversaccio/safe-tx-hashes-util/blob/main/safe_hashes.sh). To do so, you would proceed through the [Safe UI](https://app.safe.global) as usual, stopping at the page where the transaction is signed or executed. At this point, the action is recorded in the [Safe Transaction Service API](https://docs.safe.global/core-api/transaction-service-overview), allowing you to retrieve the unsigned transaction by setting `trusted=false` in the [API](https://docs.safe.global/core-api/transaction-service-reference/mainnet#List-a-Safe's-Multisig-Transactions) query within your Bash script. For example, you might use a query such as: `https://safe-transaction-arbitrum.safe.global/api/v1/safes/0xB24A3AA250E209bC95A4a9afFDF10c6D099B3d34/multisig-transactions/?trusted=false&nonce=4`. This decision to not implement this feature avoids potential confusion caused by unsigned transactions in the queue, especially when multiple transactions share the same nonce, making it unclear which one to act upon. If this feature aligns with your needs, feel free to fork the [script](https://github.com/pcaversaccio/safe-tx-hashes-util/blob/main/safe_hashes.sh) and modify it as necessary.
->>>>>>> upstream/main
