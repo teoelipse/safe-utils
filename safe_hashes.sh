@@ -280,7 +280,11 @@ get_version() {
 validate_version() {
     local version=$1
     if [[ -z "$version" ]]; then
-        echo "$(tput setaf 3)No Safe multisig contract found for the specified network. Please ensure that you have selected the correct network.$(tput setaf 0)"
+        if [[ "$json_output" == "true" ]]; then
+            echo '{"error": "No Safe multisig contract found for the specified network. Please ensure that you have selected the correct network."}'
+        else
+            echo "$(tput setaf 3)No Safe multisig contract found for the specified network. Please ensure that you have selected the correct network.$(tput setaf 0)"
+        fi
         exit 0
     fi
 
@@ -288,7 +292,11 @@ validate_version() {
 
     # Ensure that the Safe multisig version is `>= 0.1.0`.
     if [[ "$(printf "%s\n%s" "$clean_version" "0.1.0" | sort -V | head -n1)" == "$clean_version" && "$clean_version" != "0.1.0" ]]; then
-        echo "$(tput setaf 3)Safe multisig version \"${clean_version}\" is not supported!$(tput setaf 0)"
+        if [[ "$json_output" == "true" ]]; then
+            echo "{\"error\": \"Safe multisig version '${clean_version}' is not supported!\"}"
+        else
+            echo "$(tput setaf 3)Safe multisig version \"${clean_version}\" is not supported!$(tput setaf 0)"
+        fi
         exit 0
     fi
 }
@@ -630,8 +638,21 @@ calculate_safe_hashes() {
     local chain_id=$(get_chain_id "$network")
     local endpoint="${api_url}/api/v1/safes/${address}/multisig-transactions/?nonce=${nonce}"
 
-    # Get the Safe multisig version.
-    local version=$(curl -sf "${api_url}/api/v1/safes/${address}/" | jq -r ".version // \"0.0.0\"")
+    # Get the Safe multisig version with proper error handling
+    local version
+    local api_response=$(curl -sf "${api_url}/api/v1/safes/${address}/" 2>/dev/null)
+    local curl_exit_code=$?
+
+    if [[ $curl_exit_code -ne 0 || -z "$api_response" ]]; then
+        if [[ "$json_output" == "true" ]]; then
+            echo "{\"error\": \"Safe contract not found at address ${address} on network ${network}\"}"
+        else
+            echo "$(tput setaf 3)Safe contract not found at address ${address} on network ${network}$(tput setaf 0)"
+        fi
+        exit 0
+    fi
+
+    version=$(echo "$api_response" | jq -r ".version // \"0.0.0\"")
 
     # Calculate the domain and message hashes for off-chain messages.
     if [[ -n "$message_file" ]]; then
@@ -640,10 +661,21 @@ calculate_safe_hashes() {
             exit 1
         fi
 
+        # Initialize domain separator typehash first
+        local domain_separator_typehash="$DOMAIN_SEPARATOR_TYPEHASH"
+        local domain_hash_args="$domain_separator_typehash, $chain_id, $address"
+
         local message_raw=$(< "$message_file")
         message_raw=$(echo "$message_raw" | tr -d "\r")
         local hashed_message=$(cast hash-message "$message_raw")
-        local domain_hash=$(calculate_domain_hash "$version" "$domain_separator_typehash" "$domain_hash_args")
+        
+        # Get the Safe multisig version if not already set
+        if [[ -z "$version" ]]; then
+            version=$(curl -sf "${api_url}/api/v1/safes/${address}/" | jq -r ".version // \"0.0.0\"")
+        fi
+        
+        # Calculate domain hash with proper arguments
+        local domain_hash=$(calculate_domain_hash "$version" "$DOMAIN_SEPARATOR_TYPEHASH" "$domain_hash_args")
         local message_hash=$(chisel eval "keccak256(abi.encode(bytes32($SAFE_MSG_TYPEHASH), keccak256(abi.encode(bytes32($hashed_message)))))" |
             awk '/Data:/ {gsub(/\x1b\[[0-9;]*m/, "", $3); print $3}')
         local safe_msg_hash=$(chisel eval "keccak256(abi.encodePacked(bytes1(0x19), bytes1(0x01), bytes32($domain_hash), bytes32($message_hash)))" |
@@ -665,45 +697,22 @@ calculate_safe_hashes() {
     local count=$(echo "$response" | jq -r ".count // \"0\"")
     local idx=0
 
-    # Inform the user that no transactions are available for the specified nonce.
+    # Handle no transactions or multiple transactions
     if [[ $count -eq 0 ]]; then
-        echo "$(tput setaf 3)No transaction is available for this nonce!$(tput sgr0)"
+        if [[ "$json_output" == "true" ]]; then
+            echo '{"error": "No transaction is available for this nonce!"}'
+        else
+            echo "$(tput setaf 3)No transaction is available for this nonce!$(tput sgr0)"
+        fi
         exit 0
-    # Notify the user about multiple transactions with identical nonce values and prompt for user input.
     elif [[ $count -gt 1 ]]; then
-        cat <<EOF
-$(tput setaf 3)Several transactions with identical nonce values have been detected.
-This occurrence is normal if you are deliberately replacing an existing transaction.
-However, if your Safe interface displays only a single transaction, this could indicate
-potential irregular activity requiring your attention.$(tput sgr0)
-
-Kindly specify the transaction's array value (available range: 0-$((${count} - 1))).
-You can find the array values at the following endpoint:
-$(tput setaf 2)$endpoint$(tput sgr0)
-
-Please enter the index of the array:
-EOF
-
-        while true; do
-            read -r idx
-
-            # Validate if user input is a number.
-            if ! [[ $idx =~ ^[0-9]+$ ]]; then
-                echo "$(tput setaf 1)Error: Please enter a valid number!$(tput sgr0)"
-                continue
-            fi
-
-            local array_value=$(echo "$response" | jq ".results[$idx]")
-
-            if [[ $array_value == null ]]; then
-                echo "$(tput setaf 1)Error: No transaction found at index $idx. Please try again.$(tput sgr0)"
-                continue
-            fi
-
-            printf "\n"
-
-            break
-        done
+        if [[ "$json_output" == "true" ]]; then
+            echo '{"error": "Several transactions with identical nonce values have been detected. Please check the API endpoint for details.", "endpoint": "'"$endpoint"'"}'
+        else
+            echo "$(tput setaf 3)Warning: Several transactions with identical nonce values have been detected."
+            echo "Please check the API endpoint for details: $(tput setaf 2)$endpoint$(tput sgr0)"
+        fi
+        exit 0
     fi
 
     local to=$(echo "$response" | jq -r ".results[$idx].to // \"0x0000000000000000000000000000000000000000\"")
