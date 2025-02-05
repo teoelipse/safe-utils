@@ -517,29 +517,34 @@ export default function Home() {
                         { key: "to", label: "To" },
                         { key: "data", label: "Data" },
                         { key: "encoded_message", label: "Encoded message" },
-                      ].map(({ key, label }) => (
-                        <div
-                          key={key}
-                          className="flex flex-col space-y-2 w-full"
-                        >
-                          <Label>{label}</Label>
-                          <div className="flex items-center space-x-2 w-full">
-                            <Input
-                              readOnly
-                              value={result.transaction?.[key as keyof typeof result.transaction]}
-                            />
-                            <CopyButton
-                              value={result.transaction?.[key as keyof typeof result.transaction] || ""}
-                              onCopy={() => {
-                                toast({
-                                  title: "Copied to clipboard",
-                                  description: `${label} has been copied to your clipboard.`,
-                                });
-                              }}
-                            />
+                      ].map(({ key, label }) => {
+                        const value = result.transaction?.[key as keyof typeof result.transaction];
+                        const stringValue = typeof value === 'string' ? value : '';
+                        
+                        return (
+                          <div
+                            key={key}
+                            className="flex flex-col space-y-2 w-full"
+                          >
+                            <Label>{label}</Label>
+                            <div className="flex items-center space-x-2 w-full">
+                              <Input
+                                readOnly
+                                value={stringValue}
+                              />
+                              <CopyButton
+                                value={stringValue}
+                                onCopy={() => {
+                                  toast({
+                                    title: "Copied to clipboard",
+                                    description: `${label} has been copied to your clipboard.`,
+                                  });
+                                }}
+                              />
+                            </div>
                           </div>
-                        </div>
-                      ))}
+                        );
+                      })}
                       <div className="flex flex-col space-y-2 w-full">
                         <Label>Method</Label>
                         <Input
