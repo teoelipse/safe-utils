@@ -1,33 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { exec } from 'child_process'
+import { execFile } from 'child_process'
 import util from 'util'
 import path from 'path'
+import { API_URLS, isValidEthereumAddress, isValidNetwork, isValidNonce } from '@/lib/utils'
 
-const execPromise = util.promisify(exec)
-
-const API_URLS: { [key: string]: string } = {
-  arbitrum: "https://safe-transaction-arbitrum.safe.global",
-  aurora: "https://safe-transaction-aurora.safe.global",
-  avalanche: "https://safe-transaction-avalanche.safe.global",
-  base: "https://safe-transaction-base.safe.global",
-  "base-sepolia": "https://safe-transaction-base-sepolia.safe.global",
-  blast: "https://safe-transaction-blast.safe.global",
-  bsc: "https://safe-transaction-bsc.safe.global",
-  celo: "https://safe-transaction-celo.safe.global",
-  ethereum: "https://safe-transaction-mainnet.safe.global",
-  gnosis: "https://safe-transaction-gnosis-chain.safe.global",
-  "gnosis-chiado": "https://safe-transaction-chiado.safe.global",
-  linea: "https://safe-transaction-linea.safe.global",
-  mantle: "https://safe-transaction-mantle.safe.global",
-  optimism: "https://safe-transaction-optimism.safe.global",
-  polygon: "https://safe-transaction-polygon.safe.global",
-  "polygon-zkevm": "https://safe-transaction-zkevm.safe.global",
-  scroll: "https://safe-transaction-scroll.safe.global",
-  sepolia: "https://safe-transaction-sepolia.safe.global",
-  worldchain: "https://safe-transaction-worldchain.safe.global",
-  xlayer: "https://safe-transaction-xlayer.safe.global",
-  zksync: "https://safe-transaction-zksync.safe.global"
-}
+const execFilePromise = util.promisify(execFile)
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url)
@@ -35,19 +12,53 @@ export async function GET(request: NextRequest) {
   const address = searchParams.get('address')
   const nonce = searchParams.get('nonce')
 
+  // Check for missing parameters
   if (!network || !address || !nonce) {
-    return NextResponse.json({ error: 'Missing required parameters' }, { status: 400 })
+    return NextResponse.json({ 
+      error: 'Missing required parameters',
+      details: 'network, address, and nonce are required' 
+    }, { status: 400 })
   }
 
-  const apiUrl = API_URLS[network]
-  if (!apiUrl) {
-    return NextResponse.json({ error: 'Invalid network' }, { status: 400 })
+  // Validate network
+  if (!isValidNetwork(network)) {
+    return NextResponse.json({ 
+      error: 'Invalid network',
+      details: `Network must be one of: ${Object.keys(API_URLS).join(', ')}` 
+    }, { status: 400 })
+  }
+
+  // Validate address
+  if (!isValidEthereumAddress(address)) {
+    return NextResponse.json({ 
+      error: 'Invalid address',
+      details: 'Address must be a valid Ethereum address (0x followed by 40 hex characters)' 
+    }, { status: 400 })
+  }
+
+  // Validate nonce
+  if (!isValidNonce(nonce)) {
+    return NextResponse.json({ 
+      error: 'Invalid nonce',
+      details: 'Nonce must be a positive integer between 0 and 1000000' 
+    }, { status: 400 })
   }
 
   try {
-    const scriptPath = path.join(process.cwd(), '..', 'safe_hashes.sh')
-    const command = `${scriptPath} --network ${network} --address ${address} --nonce ${nonce} --json`
-    const { stdout, stderr } = await execPromise(command)
+    const scriptPath = path.resolve(process.cwd(), '..', 'safe_hashes.sh')
+    
+    // Validate script path
+    if (!scriptPath.endsWith('safe_hashes.sh')) {
+      return NextResponse.json({ 
+        error: 'Invalid script configuration',
+        details: 'Script path validation failed' 
+      }, { status: 500 })
+    }
+
+    const { stdout, stderr } = await execFilePromise(
+      scriptPath,
+      ['--network', network, '--address', address, '--nonce', nonce, '--json']
+    )
 
     if (stderr) {
       console.error('Script error:', stderr)
@@ -59,10 +70,16 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ result })
     } catch (parseError) {
       console.error('Error parsing script output:', parseError)
-      return NextResponse.json({ error: 'Error parsing script output' }, { status: 500 })
+      return NextResponse.json({ 
+        error: 'Error parsing script output',
+        details: 'Failed to parse JSON response' 
+      }, { status: 500 })
     }
   } catch (error) {
     console.error('Error:', error)
-    return NextResponse.json({ error: 'An error occurred while processing the request' }, { status: 500 })
+    return NextResponse.json({ 
+      error: 'An error occurred while processing the request',
+      details: error instanceof Error ? error.message : 'Unknown error'
+    }, { status: 500 })
   }
 }

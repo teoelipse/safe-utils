@@ -1,11 +1,12 @@
-import { NextRequest } from "next/server";
-import { exec } from "child_process";
+import { NextRequest, NextResponse } from "next/server";
+import { execFile } from "child_process";
 import { promisify } from "util";
 import { writeFile, unlink } from "fs/promises";
 import { join } from "path";
 import { tmpdir } from "os";
+import { API_URLS, isValidEthereumAddress, isValidNetwork } from "@/lib/utils";
 
-const execAsync = promisify(exec);
+const execFilePromise = promisify(execFile);
 
 // Fix the path by going up one level from the app directory
 const projectRoot = join(process.cwd(), '..');
@@ -18,7 +19,31 @@ export async function GET(request: NextRequest) {
   const message = searchParams.get("message");
   let tempFile: string | null = null;
 
+  // Check for missing parameters
   if (!network || !address || !message) {
+    return NextResponse.json({ 
+      error: 'Missing required parameters',
+      details: 'network and address are required' 
+    }, { status: 400 })
+  }
+
+  // Validate network
+  if (!isValidNetwork(network)) {
+    return NextResponse.json({ 
+      error: 'Invalid network',
+      details: `Network must be one of: ${Object.keys(API_URLS).join(', ')}` 
+    }, { status: 400 })
+  }
+
+  // Validate address
+  if (!isValidEthereumAddress(address)) {
+    return NextResponse.json({ 
+      error: 'Invalid address',
+      details: 'Address must be a valid Ethereum address (0x followed by 40 hex characters)' 
+    }, { status: 400 })
+  }
+
+  if (!message) {
     return new Response(
       JSON.stringify({
         error: "Missing required parameters",
@@ -41,7 +66,10 @@ export async function GET(request: NextRequest) {
     const command = `${SCRIPT_PATH} --network ${network} --address ${address} --message "${tempFile}" --json`;
     console.log('Executing command:', command);
 
-    const { stdout, stderr } = await execAsync(command);
+    const { stdout, stderr } = await execFilePromise(
+      SCRIPT_PATH,
+      ['--network', network, '--address', address, '--message', tempFile, '--json']
+    );
 
     if (stderr) {
       console.error('Script stderr:', stderr);
