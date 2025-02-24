@@ -7,17 +7,26 @@ import { Button } from "@/components/ui/button";
 import { BookOpen, Github } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "./ui/dropdown-menu";
 import { usePathname } from "next/navigation";
+import Image from "next/image";
+import { useTheme } from "next-themes";
 
 export function Header() {
   const pathname = usePathname();
+  const { theme } = useTheme();
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="flex h-14 w-full items-center justify-between px-4 sm:px-5">
         <div className="flex items-center space-x-4">
+          
           <Link href="/" className="flex items-center space-x-2">
-            <span className="font-bold text-lg hidden sm:inline">Safe Hash Preview</span>
-            <span className="font-bold text-lg sm:hidden">SHP</span>
+            <Image
+              src={`/OZ-Logo-${theme === 'dark' ? 'White' : 'Black'}.svg`}
+              alt="OpenZeppelin Logo"
+              width={200}
+              height={20}
+              priority
+            />
           </Link>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
