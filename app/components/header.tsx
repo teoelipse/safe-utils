@@ -5,13 +5,11 @@ import Link from "next/link";
 import { ModeToggle } from "./ModeToggle";
 import { Button } from "@/components/ui/button";
 import { BookOpen, Github } from "lucide-react";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "./ui/dropdown-menu";
 import { usePathname } from "next/navigation";
 import Image from "next/image";
 import { useTheme } from "next-themes";
 
 export function Header() {
-  const pathname = usePathname();
   const { theme } = useTheme();
 
   return (
