@@ -28,25 +28,6 @@ export function Header() {
               priority
             />
           </Link>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="sm" className="h-8">
-                Tools
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="start" className="w-[200px]">
-              <DropdownMenuItem className={pathname === "/" ? "bg-secondary" : ""}>
-                <Link href="/" className="flex w-full">
-                  Safe Preview Hash
-                </Link>
-              </DropdownMenuItem>
-              <DropdownMenuItem className={pathname === "/sign-message" ? "bg-secondary" : ""}>
-                <Link href="/sign-message" className="flex w-full">
-                  Sign Message
-                </Link>
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
         </div>
 
         <nav className="flex items-center space-x-2">
