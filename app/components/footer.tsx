@@ -17,6 +17,16 @@ export function Footer() {
             OpenZeppelin
             <ExternalLink className="h-3 w-3" />
           </a>
+          . Subject to our{" "}
+          <a
+            href="https://www.openzeppelin.com/tos"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="font-medium underline underline-offset-4 inline-flex items-center gap-1"
+          >
+          Terms of Service
+          </a>
+          
           . <Code2 className="h-4 w-4" /> Script by{" "}
           <a
             href="https://x.com/pcaversaccio"

@@ -32,8 +32,8 @@ export function Disclaimer({
             Disclaimer
           </DialogTitle>
         </DialogHeader>
-        <DialogDescription className="text-sm text-foreground">
-          This is a fork of{" "}
+        <DialogDescription className="text-sm text-foreground text-justify">
+          This is a fork of a script by{" "}
           <a
             href="https://github.com/pcaversaccio/safe-tx-hashes-util"
             target="_blank"
@@ -42,10 +42,18 @@ export function Disclaimer({
           >
             @pcaversaccio
           </a>{" "}
-          script that introduces an UI on top. This tool is intended to be used as playground and proof of concept and by
-          any means it is ready for production use since it has not undergone any security assessment.
+          that adds a user interface. It has not been subject to any security assessment and is therefore not suitable for production use. Any use of the tool is at your own risk in accordance with our{" "}
+          <a
+            href="https://www.openzeppelin.com/tos"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="font-medium underline underline-offset-4"
+          >
+            Terms of Service
+          </a>
+          .
           <br /><br />
-          While we tried to keep dependencies as minimal as possible, it is advised to always do your own research and{" "}
+          This tool is intended to be used as a proof of concept and feedback and contributions are welcome. While there are few dependencies, you should always do your own investigation and{" "}
           <a 
             href="https://github.com/openzeppelin/safe-utils"
             target="_blank"
@@ -54,9 +62,7 @@ export function Disclaimer({
           >
             run the tool locally
           </a>{" "}
-          whenever possible.
-          <br /><br />
-          OpenZeppelin doesn&apos;t take responsibility for any incident resulting from the use of this tool.
+          where possible.
         </DialogDescription>
       </DialogContent>
     </Dialog>
