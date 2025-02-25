@@ -156,7 +156,6 @@ export default function Home() {
       <Toaster />
       <div className="container mx-auto p-8">
         <div className="flex items-center gap-2 mb-4">
-          <h1 className="text-3xl font-bold">Safe Hash Preview</h1>
           <Disclaimer className="text-muted-foreground hover:text-foreground text-sm flex items-center gap-1 mt-2">
             <Info className="h-4 w-4" />
             Disclaimer
