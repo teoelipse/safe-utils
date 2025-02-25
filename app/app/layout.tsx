@@ -5,6 +5,7 @@ import { TooltipProvider } from '@/components/ui/tooltip'
 import { Footer } from '@/components/footer'
 import { ThemeProvider } from '@/components/ThemeProvider'
 import { Header } from '@/components/header'
+import AnimatedBackground from '@/components/animated-background'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -21,14 +22,15 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={inter.className}>
-      <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           <TooltipProvider>
-            <div className="flex flex-col min-h-screen w-full">
-              <Header />
-              <main className="flex-grow">
-                {children}
-              </main>
-              <Footer />
+            <div className="flex flex-col min-h-screen w-full relative">
+              <AnimatedBackground />
+              <div className="relative z-10 flex flex-col min-h-screen w-full">
+                <Header />
+                <main className="flex-grow">{children}</main>
+                <Footer />
+              </div>
             </div>
           </TooltipProvider>
         </ThemeProvider>
@@ -36,3 +38,4 @@ export default function RootLayout({
     </html>
   )
 }
+
