@@ -120,7 +120,7 @@ export default function Home() {
     setResult(null);
     try {
       const response = await axios.get<{ result: ApiResponse }>(
-        `/api/calculate-hashes?network=${data.network}&address=${data.address}&nonce=${data.nonce}`
+        `${process.env.NEXT_PUBLIC_BASE_PATH || ''}/api/calculate-hashes?network=${data.network}&address=${data.address}&nonce=${data.nonce}`
       );
       setResult(response.data.result);
     } catch (error) {
@@ -195,12 +195,12 @@ export default function Home() {
                               {field.value && (
                                 <div className="flex items-center">
                                   <img
-                                    src={
+                                    src={`${process.env.NEXT_PUBLIC_BASE_PATH || ''}/${
                                       NETWORKS.find(
                                         (network) =>
                                           network.value === field.value
                                       )?.logo
-                                    }
+                                    }`}
                                     alt={`${field.value} logo`}
                                     className="w-5 h-5 mr-2"
                                   />
@@ -222,7 +222,7 @@ export default function Home() {
                             >
                               <div className="flex items-center">
                                 <img
-                                  src={network.logo}
+                                  src={`${process.env.NEXT_PUBLIC_BASE_PATH || ''}/${network.logo}`}
                                   alt={`${network.label} logo`}
                                   className="w-5 h-5 mr-2"
                                 />
