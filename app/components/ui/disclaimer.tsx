@@ -56,7 +56,7 @@ export function Disclaimer({
           </a>{" "}
           whenever possible.
           <br /><br />
-          OpenZeppelin doesn't take responsibility for any incident resulting from the use of this tool.
+          OpenZeppelin doesn&apos;t take responsibility for any incident resulting from the use of this tool.
         </DialogDescription>
       </DialogContent>
     </Dialog>

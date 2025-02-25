@@ -127,7 +127,7 @@ export default function HowItWorks() {
               Ensure that hashes match the ones displayed on your signing device.
             </li>
             <li>
-              If you see more than one transaction with the same nonce, ensure it is exclusively because you're trying to replace a transaction. If this is not the case, something unintended is happening.
+              If you see more than one transaction with the same nonce, ensure it is exclusively because you&apos;re trying to replace a transaction. If this is not the case, something unintended is happening.
             </li>
           </ol>
         </CardContent>

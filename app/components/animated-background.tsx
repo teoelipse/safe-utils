@@ -38,10 +38,14 @@ const AnimatedBackground: React.FC = () => {
       size: number
       speedX: number
       speedY: number
+      canvasWidth: number
+      canvasHeight: number
 
       constructor() {
-        this.x = Math.random() * canvas.width
-        this.y = Math.random() * canvas.height
+        this.canvasWidth = canvas?.width || window.innerWidth
+        this.canvasHeight = canvas?.height || window.innerHeight
+        this.x = Math.random() * this.canvasWidth
+        this.y = Math.random() * this.canvasHeight
         this.size = Math.random() * 5 + 1
         this.speedX = (Math.random() * 1.5 - 0.75) * 0.75
         this.speedY = (Math.random() * 1.5 - 0.75) * 0.75
@@ -51,23 +55,23 @@ const AnimatedBackground: React.FC = () => {
         this.x += this.speedX
         this.y += this.speedY
 
-        if (this.x > canvas.width) this.x = 0
-        else if (this.x < 0) this.x = canvas.width
+        if (this.x > this.canvasWidth) this.x = 0
+        else if (this.x < 0) this.x = this.canvasWidth
 
-        if (this.y > canvas.height) this.y = 0
-        else if (this.y < 0) this.y = canvas.height
+        if (this.y > this.canvasHeight) this.y = 0
+        else if (this.y < 0) this.y = this.canvasHeight
       }
 
       draw() {
         // Use different colors for dark and light modes with reduced opacity for light mode
-        ctx.fillStyle = isDark 
+        ctx!.fillStyle = isDark 
           ? "rgba(255, 255, 255, 0.3)" 
           : "rgba(0, 0, 0, 0.3)" // Reduced opacity for light mode
         
-        ctx.beginPath()
-        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2)
-        ctx.closePath()
-        ctx.fill()
+        ctx!.beginPath()
+        ctx!.arc(this.x, this.y, this.size, 0, Math.PI * 2)
+        ctx!.closePath()
+        ctx!.fill()
       }
     }
 
