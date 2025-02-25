@@ -14,14 +14,31 @@ export default function HowItWorks() {
           <p>
             Safe Hash Preview was created as a quick response to the{" "}
             <a
+              href="https://rekt.news/wazirx-rekt/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-bold hover:underline"
+            >
+            WazirX,{" "}
+            </a>
+            <a
               href="https://medium.com/@RadiantCapital/radiant-post-mortem-fecd6cd38081"
               target="_blank"
               rel="noopener noreferrer"
               className="font-bold hover:underline"
             >
-              Radiant exploit
+            Radiant{" "}
             </a>
-            . The core{" "}
+            and{" "}
+            <a
+              href="https://rekt.news/bybit-rekt/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-bold hover:underline"
+            > 
+            Bybit{" "}
+            </a>
+            exploits. The core{" "}
             <a
               href="https://github.com/pcaversaccio/safe-tx-hashes-util"
               target="_blank"
@@ -30,7 +47,16 @@ export default function HowItWorks() {
             >
               script
             </a>{" "}
-            was developed by pcaversaccio, and we added a user-friendly
+            was developed by{" "}
+            <a
+              href="https://x.com/pcaversaccio"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-bold hover:underline"
+            >
+              pcaversaccio
+            </a>{" "}
+            , and we added a user-friendly
             interface to make it more accessible.
           </p>
           <p className="mt-4">
@@ -88,6 +114,22 @@ export default function HowItWorks() {
             The script uses the EIP-712 standard and the same type hashes as the
             Safe contracts to ensure accuracy.
           </p>
+        </CardContent>
+      </Card>
+
+      <Card className="mb-8">
+        <CardHeader>
+          <CardTitle>What to Look For</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <ol className="list-decimal list-inside space-y-2 mt-2">
+            <li>
+              Ensure that hashes match the ones displayed on your signing device
+            </li>
+            <li>
+              If you see more than one transaction with the same nonce, ensure it is _exclusively_ because you're trying to replace a transaction. If this is not the case, something unintended is happening.
+            </li>
+          </ol>
         </CardContent>
       </Card>
 
