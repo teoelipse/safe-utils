@@ -1,5 +1,6 @@
-import { AlertTriangle, Info } from "lucide-react"
-import { Alert, AlertDescription } from "@/components/ui/alert"
+"use client"
+
+import { AlertTriangle } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -10,13 +11,18 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog"
 
-export function Disclaimer({ className }: { className?: string }) {
+export function Disclaimer({ 
+  className, 
+  children 
+}: { 
+  className?: string;
+  children?: React.ReactNode;
+}) {
   return (
     <Dialog>
       <DialogTrigger asChild>
         <Button variant="link" size="sm" className={className}>
-          <Info className="h-4 w-4" />
-          Disclaimer
+          {children}
         </Button>
       </DialogTrigger>
       <DialogContent>

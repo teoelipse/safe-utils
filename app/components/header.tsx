@@ -22,7 +22,12 @@ export function Header() {
               src={`/OZ-Logo-${theme === 'dark' ? 'White' : 'Black'}.svg`}
               alt="OpenZeppelin Logo"
               width={200}
-              height={20}
+              height={40}
+              style={{ 
+                width: '200px', 
+                height: '40px',
+                objectFit: 'contain'
+              }}
               priority
             />
           </Link>

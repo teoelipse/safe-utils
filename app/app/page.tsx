@@ -154,7 +154,7 @@ export default function Home() {
   return (
     <>
       <Toaster />
-      <main className="container mx-auto p-8">
+      <div className="container mx-auto p-8">
         <div className="flex items-center gap-2 mb-4">
           <h1 className="text-3xl font-bold">Safe Hash Preview</h1>
           <Disclaimer className="text-muted-foreground hover:text-foreground text-sm flex items-center gap-1 mt-2">
@@ -459,7 +459,7 @@ export default function Home() {
             </CardContent>
           </Card>
         )}
-      </main>
+      </div>
     </>
   );
 }
