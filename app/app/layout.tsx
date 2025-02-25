@@ -10,8 +10,21 @@ import AnimatedBackground from '@/components/animated-background'
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'Safe Hash Preview',
-  description: 'Preview Safe transaction hashes',
+  title: 'Safe Utils | OpenZeppelin',
+  description: 'Preview and calculate Safe transaction hashes for Ethereum and other EVM chains. Verify transaction signatures and domain hashes.',
+  keywords: 'Safe, Gnosis Safe, transaction hash, Ethereum, multisig, blockchain, smart contract, EVM',
+  authors: [{ name: 'OpenZeppelin' }],
+  openGraph: {
+    title: 'Safe Utils | OpenZeppelin',
+    description: 'Preview and calculate Safe transaction hashes for Ethereum and other EVM chains',
+    type: 'website',
+    locale: 'en_US',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Safe Utils | OpenZeppelin',
+    description: 'Preview and calculate Safe transaction hashes for Ethereum and other EVM chains',
+  },
 }
 
 export default function RootLayout({
