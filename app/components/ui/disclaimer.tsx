@@ -47,7 +47,7 @@ export function Disclaimer({
           <br /><br />
           While we tried to keep dependencies as minimal as possible, it is advised to always do your own research and{" "}
           <a 
-            href="https://github.com/josepchetrit12/safe-tx-hashes-util"
+            href="https://github.com/openzeppelin/safe-utils"
             target="_blank"
             rel="noopener noreferrer"
             className="font-medium underline underline-offset-4"
