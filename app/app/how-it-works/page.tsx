@@ -124,10 +124,10 @@ export default function HowItWorks() {
         <CardContent>
           <ol className="list-decimal list-inside space-y-2 mt-2">
             <li>
-              Ensure that hashes match the ones displayed on your signing device
+              Ensure that hashes match the ones displayed on your signing device.
             </li>
             <li>
-              If you see more than one transaction with the same nonce, ensure it is _exclusively_ because you're trying to replace a transaction. If this is not the case, something unintended is happening.
+              If you see more than one transaction with the same nonce, ensure it is exclusively because you're trying to replace a transaction. If this is not the case, something unintended is happening.
             </li>
           </ol>
         </CardContent>
