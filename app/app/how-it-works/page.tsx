@@ -4,7 +4,7 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 export default function HowItWorks() {
   return (
     <main className="container mx-auto p-8">
-      <h1 className="text-3xl font-bold mb-8">How It Works</h1>
+      {/* <h1 className="text-3xl font-bold mb-8">How It Works</h1> */}
 
       <Card className="mb-8">
         <CardHeader>
@@ -127,7 +127,7 @@ export default function HowItWorks() {
               Ensure that hashes match the ones displayed on your signing device.
             </li>
             <li>
-              If you see more than one transaction with the same nonce, ensure it is exclusively because you're trying to replace a transaction. If this is not the case, something unintended is happening.
+              If you see more than one transaction with the same nonce, ensure it is exclusively because you&apos;re trying to replace a transaction. If this is not the case, something unintended is happening.
             </li>
           </ol>
         </CardContent>

@@ -29,6 +29,8 @@ import { ShareButton } from "@/components/ui/share-button";
 import PixelAvatar from "@/components/pixel-avatar";
 import { useSearchParams } from "next/navigation";
 import { NETWORKS } from "./constants";
+import { Disclaimer } from "@/components/ui/disclaimer";
+import { Info } from "lucide-react";
 
 interface FormData {
   network: string;
@@ -118,7 +120,7 @@ export default function Home() {
     setResult(null);
     try {
       const response = await axios.get<{ result: ApiResponse }>(
-        `/api/calculate-hashes?network=${data.network}&address=${data.address}&nonce=${data.nonce}`
+        `${process.env.NEXT_PUBLIC_BASE_PATH || ''}/api/calculate-hashes?network=${data.network}&address=${data.address}&nonce=${data.nonce}`
       );
       setResult(response.data.result);
     } catch (error) {
@@ -152,8 +154,13 @@ export default function Home() {
   return (
     <>
       <Toaster />
-      <main className="container mx-auto p-8">
-        <h1 className="text-3xl font-bold mb-4">Safe Hash Preview</h1>
+      <div className="container mx-auto p-8">
+        <div className="flex items-center gap-2 mb-4">
+          <Disclaimer className="text-muted-foreground hover:text-foreground text-sm flex items-center gap-1 mt-2">
+            <Info className="h-4 w-4" />
+            Disclaimer
+          </Disclaimer>
+        </div>
         <Card className="mb-4">
           <CardHeader>
             <CardTitle>Input Parameters</CardTitle>
@@ -188,12 +195,12 @@ export default function Home() {
                               {field.value && (
                                 <div className="flex items-center">
                                   <img
-                                    src={
+                                    src={`${process.env.NEXT_PUBLIC_BASE_PATH || ''}/${
                                       NETWORKS.find(
                                         (network) =>
                                           network.value === field.value
                                       )?.logo
-                                    }
+                                    }`}
                                     alt={`${field.value} logo`}
                                     className="w-5 h-5 mr-2"
                                   />
@@ -215,7 +222,7 @@ export default function Home() {
                             >
                               <div className="flex items-center">
                                 <img
-                                  src={network.logo}
+                                  src={`${process.env.NEXT_PUBLIC_BASE_PATH || ''}/${network.logo}`}
                                   alt={`${network.label} logo`}
                                   className="w-5 h-5 mr-2"
                                 />
@@ -451,7 +458,7 @@ export default function Home() {
             </CardContent>
           </Card>
         )}
-      </main>
+      </div>
     </>
   );
 }
