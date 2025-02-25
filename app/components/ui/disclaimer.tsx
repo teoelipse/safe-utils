@@ -35,7 +35,7 @@ export function Disclaimer({
         <DialogDescription className="text-sm text-foreground">
           This is a fork of{" "}
           <a
-            href="https://github.com/pcaversaccio"
+            href="https://github.com/pcaversaccio/safe-tx-hashes-util"
             target="_blank"
             rel="noopener noreferrer"
             className="font-medium underline underline-offset-4"
@@ -47,7 +47,9 @@ export function Disclaimer({
           <br /><br />
           While we tried to keep dependencies as minimal as possible, it is advised to always do your own research and{" "}
           <a 
-            href="#" 
+            href="https://github.com/josepchetrit12/safe-tx-hashes-util"
+            target="_blank"
+            rel="noopener noreferrer"
             className="font-medium underline underline-offset-4"
           >
             run the tool locally
