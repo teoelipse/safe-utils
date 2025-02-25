@@ -49,7 +49,7 @@ export function Header() {
           </Button>
           <Button variant="ghost" size="icon" className="h-8 w-8" asChild>
             <a
-              href="https://github.com/josepchetrit12/safe-tx-hashes-util"
+              href="https://github.com/openzeppelin/safe-utils"
               target="_blank"
               rel="noopener noreferrer"
             >
