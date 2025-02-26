@@ -29,7 +29,7 @@ export function Footer() {
           
           . <Code2 className="h-4 w-4" /> Script by{" "}
           <a
-            href="https://x.com/pcaversaccio"
+            href="https://github.com/pcaversaccio"
             target="_blank"
             rel="noopener noreferrer"
             className="font-medium underline underline-offset-4 inline-flex items-center gap-1"
