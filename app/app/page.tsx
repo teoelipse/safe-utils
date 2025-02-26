@@ -660,15 +660,6 @@ export default function Home() {
             <CardHeader>
               <CardTitle>Result</CardTitle>
             </CardHeader>
-            <div className="absolute top-3 right-3">
-              <ShareButton
-                url={getShareUrl(
-                  form.getValues("network"),
-                  form.getValues("address"),
-                  form.getValues("nonce")
-                )}
-              />
-            </div>
             <CardContent>
               {isLoading ? (
                 <>
