@@ -4,6 +4,12 @@ This repository contains both a Bash script and a web interface for calculating 
 
 The project is a fork of [@pcaversaccio](https://x.com/pcaversaccio) bash script, full details of such script README can be found at [its original reository](https://github.com/pcaversaccio/safe-tx-hashes-util/blob/main/README.md).
 
+## Disclaimer
+
+This is a fork of a script by [@pcaversaccio](https://github.com/pcaversaccio/safe-tx-hashes-util) that adds a user interface. It has not been subject to any security assessment and is therefore not suitable for production use. Any use of the tool is at your own risk in accordance with our [Terms of Service](https://www.openzeppelin.com/tos).
+
+This tool is intended to be used as a proof of concept and feedback and contributions are welcome. While there are few dependencies, you should always do your own investigation and [run the tool locally](https://github.com/openzeppelin/safe-utils?tab=readme-ov-file#run-locally) where possible.
+
 ## Prerequisites
 
 Before you begin, ensure you have the following installed:
