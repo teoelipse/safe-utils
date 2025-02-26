@@ -11,7 +11,9 @@ const config: Config = {
   	extend: {
   		backgroundImage: {
   			'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
-  			'gradient-conic': 'conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))'
+  			'gradient-conic': 'conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))',
+  			'gradient-main': 'linear-gradient(to bottom, #FAFAFA, #7F8DFF)',
+  			'gradient-main-dark': 'linear-gradient(to bottom, #101015, #7F8DFF)',
   		},
   		borderRadius: {
   			lg: 'var(--radius)',
