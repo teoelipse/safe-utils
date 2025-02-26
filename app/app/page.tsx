@@ -297,7 +297,7 @@ export default function Home() {
         <h1 className="text-[48px] font-semibold text-center mb-8 dark:text-title-dark text-title-light">
           Safe Utils
         </h1>
-        <Card className="rounded-[24px] sm:p-16 p-5 dark:bg-card-dark bg-card-light w-full sm:w-[570px] mx-4">
+        <Card className="rounded-[24px] sm:p-16 p-5 dark:bg-card-dark bg-card-light w-full sm:w-[620px] mx-4">
           <CardHeader className="flex flex-row justify-between">
             <CardTitle className="text-[24px] font-semibold dark:text-title-dark text-title-light">
               Transaction Parameters
@@ -656,7 +656,7 @@ export default function Home() {
         </Card>
         
         {(isLoading || result) && (
-          <Card className="rounded-[24px] sm:p-16 p-5 dark:bg-card-dark bg-card-light w-full sm:w-[570px] mx-4 mt-8">
+          <Card className="rounded-[24px] sm:p-16 p-5 dark:bg-card-dark bg-card-light w-full sm:w-[620px] mx-4 mt-8">
             <CardHeader>
               <CardTitle>Result</CardTitle>
             </CardHeader>
