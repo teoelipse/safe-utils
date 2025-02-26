@@ -154,16 +154,20 @@ export default function Home() {
   return (
     <>
       <Toaster />
-      <div className="container mx-auto p-8">
-        <div className="flex items-center gap-2 mb-4">
-          <Disclaimer className="text-muted-foreground hover:text-foreground text-sm flex items-center gap-1 mt-2">
-            <Info className="h-4 w-4" />
-            Disclaimer
-          </Disclaimer>
-        </div>
-        <Card className="mb-4">
-          <CardHeader>
-            <CardTitle>Input Parameters</CardTitle>
+      <div className="flex flex-col w-full justify-center items-center p-5">
+        <h1 className="text-[48px] font-semibold text-center mb-8 dark:text-title-dark text-title-light">
+          Safe Utils
+        </h1>
+        <Card className="rounded-[24px] sm:p-16 p-5 dark:bg-card-dark bg-card-light w-full sm:w-[555px] mx-4">
+          <CardHeader className="flex flex-row justify-between">
+            <CardTitle className="text-[24px] font-semibold dark:text-title-dark text-title-light">
+              Input Parameters
+            </CardTitle>
+            <div className="flex items-center gap-2 mb-4">
+              <Disclaimer className="text-muted-foreground hover:text-foreground text-[14px] flex items-center font-normal">
+                Disclaimer
+              </Disclaimer>
+            </div>
           </CardHeader>
           <CardContent>
             <Form {...form}>
@@ -312,12 +316,17 @@ export default function Home() {
                     <FormItem>
                       <FormLabel>Nonce</FormLabel>
                       <FormControl>
-                        <Input placeholder="Enter nonce" {...field} />
+                        <Input placeholder="Enter nonce" {...field} 
+                        />
                       </FormControl>
                     </FormItem>
                   )}
                 />
-                <Button type="submit" disabled={isLoading}>
+                <Button 
+                  type="submit" 
+                  disabled={isLoading}
+                  className="bg-button hover:bg-button-hover active:bg-button-active text-white rounded-full px-6 h-[48px]"
+                >
                   {isLoading ? "Calculating..." : "Calculate Hashes"}
                 </Button>
               </form>

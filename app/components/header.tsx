@@ -14,7 +14,7 @@ const OZLogo = dynamic(() => import('@/components/ui/oz-logo').then(mod => mod.O
 
 export function Header() {
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+    <header className=" top-0 z-50 w-full">
       <div className="flex h-14 w-full items-center justify-between px-4 sm:px-5">
         <div className="flex items-center space-x-4">
           <Link href="/" className="flex items-center space-x-2">
