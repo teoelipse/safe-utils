@@ -75,7 +75,7 @@ export default function HowItWorks() {
         </CardHeader>
         <CardContent>
           <ol className="list-decimal list-inside space-y-2">
-            <li>Choose the calculation method, defaults to Manual Input. Alternative you can use Safe&quot;s API which requires less input.</li>
+            <li>Choose the calculation method, defaults to Manual Input. Alternative you can use Safe&apos;s API which requires less input.</li>
             <li>Select a network from the dropdown menu.</li>
             <li>Enter the Safe address.</li>
             <li>Fill the rest of the data according to your selected method.</li>
@@ -97,7 +97,7 @@ export default function HowItWorks() {
           </p>
           <ol className="list-decimal list-inside space-y-2 mt-2">
             <li>
-              Collect transaction details either from input or Safe&quot;s API.
+              Collect transaction details either from input or Safe&apos;s API.
             </li>
             <li>
               Calculate the domain hash using the chain ID and Safe address.
