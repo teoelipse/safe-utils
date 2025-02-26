@@ -48,7 +48,7 @@ Before you begin, ensure you have the following installed:
 
 ## Usage
 
-For quick and easy access, you can use the hosted version of Safe Hash Preview at [https://www.safeutils.openzeppelin.com/](https://www.safeutils.openzeppelin.com/). This version is ready to use without any setup required.
+For quick and easy access, you can use the hosted version of Safe Hash Preview at [https://safeutils.openzeppelin.com/](https://safeutils.openzeppelin.com/). This version is ready to use without any setup required.
 
 How to use the application:
    - Choose the calculation method, defaults to Manual Input. Alternative you can use Safe's API which requires less input.
