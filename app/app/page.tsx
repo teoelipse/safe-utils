@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -24,12 +24,10 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { Toaster } from "@/components/ui/toaster";
 import { CopyButton } from "@/components/ui/copy-button";
-import { ShareButton } from "@/components/ui/share-button";
 import PixelAvatar from "@/components/pixel-avatar";
 import { useSearchParams } from "next/navigation";
 import { NETWORKS } from "./constants";
 import { Disclaimer } from "@/components/ui/disclaimer";
-import { Info } from "lucide-react";
 import { calculateHashes } from "../components/safeHashesComponent";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
@@ -124,7 +122,7 @@ async function fetchTransactionDataFromApi(
   }
 }
 
-export default function Home() {
+function HomeContent() {
   const searchParams = useSearchParams();
 
   const [result, setResult] = useState<CalculationResult | null>(null);
@@ -885,5 +883,51 @@ export default function Home() {
         )}
       </div>
     </>
+  );
+}
+
+// Loading fallback component
+function LoadingFallback() {
+  return (
+    <div className="flex flex-col w-full justify-center items-center p-5">
+      <h1 className="text-[48px] font-semibold text-center mb-8 dark:text-title-dark text-title-light">
+        Safe Utils
+      </h1>
+      <Card className="rounded-[24px] sm:p-16 p-5 dark:bg-card-dark bg-card-light w-full sm:w-[555px] mx-4">
+        <CardHeader>
+          <CardTitle>
+            <Skeleton className="h-8 w-48" />
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="space-y-2">
+            <Skeleton className="h-4 w-24" />
+            <Skeleton className="h-10 w-full" />
+          </div>
+          <div className="space-y-2">
+            <Skeleton className="h-4 w-24" />
+            <Skeleton className="h-10 w-full" />
+          </div>
+          <div className="space-y-2">
+            <Skeleton className="h-4 w-24" />
+            <Skeleton className="h-10 w-full" />
+          </div>
+          <div className="space-y-2">
+            <Skeleton className="h-4 w-24" />
+            <Skeleton className="h-10 w-full" />
+          </div>
+          <Skeleton className="h-10 w-40 mt-6" />
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+
+// Main page component with Suspense
+export default function Home() {
+  return (
+    <Suspense fallback={<LoadingFallback />}>
+      <HomeContent />
+    </Suspense>
   );
 }
