@@ -12,8 +12,16 @@ const config: Config = {
   		backgroundImage: {
   			'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
   			'gradient-conic': 'conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))',
-  			'gradient-main': 'linear-gradient(to bottom, #FAFAFA, #7F8DFF)',
-  			'gradient-main-dark': 'linear-gradient(to bottom, #101015, #7F8DFF)',
+  			'gradient-main': `linear-gradient(180deg, 
+  				#FAFAFA 0%,
+  				#F8F8FF 50%,
+  				#E6E7FF 100%
+  			)`,
+  			'gradient-main-dark': `linear-gradient(180deg, 
+  				#101015 0%,
+  				#7F8DFF 73.48%,
+  				#7F8DFF 100%
+  			)`,
   		},
   		borderRadius: {
   			lg: 'var(--radius)',
@@ -25,7 +33,9 @@ const config: Config = {
   			foreground: 'hsl(var(--foreground))',
   			card: {
   				DEFAULT: 'hsl(var(--card))',
-  				foreground: 'hsl(var(--card-foreground))'
+  				foreground: 'hsl(var(--card-foreground))',
+  				light: '#FFFFFF',    // Light mode card color
+  				dark: '#212335',     // Dark mode card color
   			},
   			popover: {
   				DEFAULT: 'hsl(var(--popover))',
@@ -60,8 +70,17 @@ const config: Config = {
   				'3': 'hsl(var(--chart-3))',
   				'4': 'hsl(var(--chart-4))',
   				'5': 'hsl(var(--chart-5))'
-  			}
-  		}
+  			},
+  			button: {
+  				DEFAULT: '#4F56FA',    // Default state
+  				hover: '#4349D4',    // Hover state (90% opacity)
+  				active: '#4349D4',   // Active state (80% opacity)
+  			},
+  			title: {
+  				dark: '#FFFFFF',    // Light mode title color
+  				light: '#0A0F39',     // Dark mode title color (#0A0F39 appears to be the dark blue shown)
+  			},
+  		},
   	}
   },
   plugins: [require("tailwindcss-animate")],

@@ -37,7 +37,7 @@ export default function RootLayout({
       <body className={inter.className}>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           <TooltipProvider>
-            <div className="flex flex-col min-h-screen w-full relative">
+            <div className="relative min-h-screen">
               <Background />
               <div className="relative z-10 flex flex-col min-h-screen w-full">
                 <Header />
