@@ -6,7 +6,7 @@ export default function HowItWorks() {
     <main className="container mx-auto p-8">
       {/* <h1 className="text-3xl font-bold mb-8">How It Works</h1> */}
 
-      <Card className="mb-8">
+      <Card className="mb-8 dark:bg-card-dark bg-card-light">
         <CardHeader>
           <CardTitle>Purpose and Origin</CardTitle>
         </CardHeader>
@@ -69,7 +69,7 @@ export default function HowItWorks() {
         </CardContent>
       </Card>
 
-      <Card className="mb-8">
+      <Card className="mb-8 dark:bg-card-dark bg-card-light">
         <CardHeader>
           <CardTitle>How to Use</CardTitle>
         </CardHeader>
@@ -87,7 +87,7 @@ export default function HowItWorks() {
         </CardContent>
       </Card>
 
-      <Card className="mb-8">
+      <Card className="mb-8 dark:bg-card-dark bg-card-light">
         <CardHeader>
           <CardTitle>How Hashes are Calculated</CardTitle>
         </CardHeader>
@@ -115,7 +115,7 @@ export default function HowItWorks() {
         </CardContent>
       </Card>
 
-      <Card className="mb-8">
+      <Card className="mb-8 dark:bg-card-dark bg-card-light">
         <CardHeader>
           <CardTitle>What to Look For</CardTitle>
         </CardHeader>
@@ -131,7 +131,7 @@ export default function HowItWorks() {
         </CardContent>
       </Card>
 
-      <Card>
+      <Card className="dark:bg-card-dark bg-card-light">
         <CardHeader>
           <CardTitle>Supported Networks</CardTitle>
         </CardHeader>
