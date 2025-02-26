@@ -49,7 +49,7 @@ export default function HowItWorks() {
             </a>{" "}
             was developed by{" "}
             <a
-              href="https://x.com/pcaversaccio"
+              href="https://github.com/pcaversaccio"
               target="_blank"
               rel="noopener noreferrer"
               className="font-bold hover:underline"
@@ -61,8 +61,8 @@ export default function HowItWorks() {
           </p>
           <p className="mt-4">
             This tool helps users verify Safe transaction hashes before signing
-            them on hardware wallets. It calculates the domain, message, and
-            Safe transaction hashes by retrieving transaction details from the
+            them. It calculates the domain, message, and
+            Safe transaction hashes by retrieving transaction details from either manual input or the
             Safe transaction service API and computing the hashes using the
             EIP-712 standard.
           </p>
@@ -75,13 +75,13 @@ export default function HowItWorks() {
         </CardHeader>
         <CardContent>
           <ol className="list-decimal list-inside space-y-2">
+            <li>Choose the calculation method, defaults to Manual Input. Alternative you can use Safe's API which requires less input.</li>
             <li>Select a network from the dropdown menu.</li>
             <li>Enter the Safe address.</li>
-            <li>Enter the transaction nonce.</li>
+            <li>Fill the rest of the data according to your selected method.</li>
             <li>Click &quot;Calculate Hashes&quot; to view the results.</li>
             <li>
-              Compare the displayed hashes with those shown on your hardware
-              wallet screen.
+              Compare the displayed hashes with those shown on your signing device.
             </li>
           </ol>
         </CardContent>
@@ -93,13 +93,11 @@ export default function HowItWorks() {
         </CardHeader>
         <CardContent>
           <p>
-            The hashes are calculated using a Bash script created by
-            pcaversaccio that follows these steps:
+            The hashes are calculated using these steps:
           </p>
           <ol className="list-decimal list-inside space-y-2 mt-2">
             <li>
-              Retrieve transaction details from the Safe transaction service
-              API.
+              Collect transaction details either from input or Safe's API.
             </li>
             <li>
               Calculate the domain hash using the chain ID and Safe address.

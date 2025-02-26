@@ -2,7 +2,9 @@
 
 This repository contains both a Bash script and a web interface for calculating Safe transaction hashes. It helps users verify transaction hashes before signing them on hardware wallets by retrieving transaction details from the Safe transaction service API and computing the domain and message hashes using the EIP-712 standard.
 
-The project is a fork of [@pcaversaccio](https://x.com/pcaversaccio) bash script, full details of such script README can be found at [its original reository](https://github.com/pcaversaccio/safe-tx-hashes-util/blob/main/README.md).
+The project is a fork of [@pcaversaccio](https://x.com/pcaversaccio) bash script, full details of such bash script README can be found at [its original reository](https://github.com/pcaversaccio/safe-tx-hashes-util/blob/main/README.md).
+
+The UI also offers a second methodo to manually input transaction details instead of recovering them from Safe's API.
 
 ## Disclaimer
 
@@ -21,7 +23,7 @@ Before you begin, ensure you have the following installed:
 1. Clone the repository:
    ```bash
    git clone https://github.com/openzeppelin/safe-utils.git
-   cd safe-tx-hashes-util
+   cd safe-utils
    ```
 
 2. Set up the `safe_hashes.sh` script:
@@ -48,12 +50,12 @@ Before you begin, ensure you have the following installed:
 
 For quick and easy access, you can use the hosted version of Safe Hash Preview at [https://www.safeutils.openzeppelin.com/](https://www.safeutils.openzeppelin.com/). This version is ready to use without any setup required.
 
-
 How to use the application:
-  - Select a network from the dropdown menu.
-  - Enter the Safe address.
-  - Enter the nonce.
-  - Click "Calculate Hashes" to view the results.
+   - Choose the calculation method, defaults to Manual Input. Alternative you can use Safe's API which requires less input.
+   - Select a network from the dropdown menu.
+   - Enter the Safe address.
+   - Fill the rest of the data according to your selected method.
+   - Click "Calculate Hashes" to view the results.
 
 ## Learn More
 
@@ -62,7 +64,6 @@ To learn more about the technologies used in this project, check out the followi
 - [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
 - [React Documentation](https://reactjs.org/) - learn about React.
 - [Tailwind CSS](https://tailwindcss.com/) - learn about the utility-first CSS framework used in this project.
-
 
 ## Contributing
 
