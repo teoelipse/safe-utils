@@ -175,3 +175,17 @@ export const NETWORKS = [
       logo: "networks/gnosis.ico",
     }
   ];
+
+
+export const SAFE_VERSIONS = [
+  "0.0.1",
+  "0.1.0",
+  "1.0.0",
+  "1.1.0",
+  "1.1.1",
+  "1.2.0",
+  "1.3.0",
+  "1.4.1"
+];
+
+export const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
