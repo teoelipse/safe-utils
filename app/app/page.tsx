@@ -35,7 +35,7 @@ function HomeContent() {
   return (
     <>
       <Toaster />
-      <div className="flex flex-col w-full justify-center items-center p-5">
+      <div className="flex flex-col w-full justify-center items-center p-5 pt-20">
         <h1 className="text-[48px] font-semibold text-center mb-4 dark:text-title-dark text-title-light">
           Safe Utils
         </h1>
