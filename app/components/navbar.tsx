@@ -381,19 +381,19 @@ const Navbar: React.FC = () => {
                                       id={item.id}
                                       href={item.href}
                                       target={item.target}
-                                      className="flex items-center gap-4 text-inherit p-[10px] rounded-[10px] transition-all duration-400 hover:bg-[#fafafa] dark:hover:bg-[#1e1e1e] hover:text-[#0a0f39] dark:hover:text-[#fafafa] min-h-[60px]"
+                                      className="flex items-center gap-4 text-inherit p-[10px] rounded-[10px] transition-all duration-400 hover:bg-[#fafafa] dark:hover:bg-[#1e1e1e] hover:text-[#0a0f39] dark:hover:text-[#fafafa] min-h-[60px] grayscale transition-all duration-300 hover:grayscale-0"
                                     >
                                       {item.icon && (
                                         <>
                                           <Image
-                                            className="w-10 grayscale transition-all duration-300 hover:grayscale-0 dark:hidden"
+                                            className="w-10 dark:hidden"
                                             src={item.icon.light}
                                             alt=""
                                             width={40}
                                             height={40}
                                           />
                                           <Image
-                                            className="w-10 grayscale transition-all duration-300 hover:grayscale-0 hidden dark:block"
+                                            className="w-10 hidden dark:block"
                                             src={item.icon.dark}
                                             alt=""
                                             width={40}
